@@ -1,4 +1,4 @@
---
+--This file defines functions which are used to construct the solution
 
 --From stackoverflow, checks if file exists--
 function file_exists(name)
@@ -20,6 +20,13 @@ project (project_name)
 		project_files.."src/**.h",
 		project_files.."include/**.h",
 		project_files.."*.*"
+	}
+	
+	includedirs{
+		FILES_PATH,
+		project_files,
+		project_files.."src",
+		project_files.."include"
 	}
 	
 	--Config specific directories--
