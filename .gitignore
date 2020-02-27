@@ -356,3 +356,4 @@ MigrationBackup/
 **.sln
 **.vcxproj
 **.vcxproj.filters
+generated_files/**

@@ -1,9 +1,31 @@
 --This file defines functions which are used to construct the solution
 
---From stackoverflow, checks if file exists--
+--Checks if file exists. From stackoverflow--
 function file_exists(name)
    local f=io.open(name,"r")
    if f~=nil then io.close(f) return true else return false end
+end
+
+--Check if table contains a value--
+function table_contains(tab, value)
+	for k,v in pairs(tab) do
+		if(v == value) then
+			return true
+		end
+	end
+	
+	return false
+end
+
+--Move a file from source to destination; keeps track of which files are moved and won't repeat moves--
+local copied_files = {}
+function copy_file(source, destination)
+	local move_key = source..">"..destination
+	
+	if not table_contains(copied_files, move_key) then
+		os.execute("echo f | xcopy /y \""..source.."\" \""..destination.."\" > nul" )
+		table.insert(copied_files, move_key)
+	end
 end
 
 --Generates a project file, customization can be added via project override file--
@@ -11,7 +33,7 @@ function generate_project(project_name, project_kind)
 project (project_name)
 	--General settings--
 	kind		(project_kind)
-	location	(PROJECT_PATH..project_name)
+	location	(PROJECT_PATH)
 	targetname	(project_name)
 	
 	local project_files = FILES_PATH..project_name.."/"
