@@ -4,7 +4,7 @@ dofile "premake_functions.lua"
 
 --Begin Solution--
 workspace "SwiftEngine"
-
+	
 	--Solution settings--
 	location(SOLUTION_PATH)
 	configurations {
@@ -15,6 +15,7 @@ workspace "SwiftEngine"
 	--Default project settings--
 	language		"C++"
 	characterset	"Unicode"
+	warnings		"Extra"
 	
 	--Preprocessor--
 	filter "configurations:debug"
@@ -45,9 +46,7 @@ workspace "SwiftEngine"
 	
 	--Projects--
 	generate_project("Core", "ConsoleApp")
-	generate_project("TestLib", "StaticLib")
-	generate_project("TestLib2", "StaticLib")
-	
+	generate_project("Types", "StaticLib")
 	
 ---------------------------------------------
 
