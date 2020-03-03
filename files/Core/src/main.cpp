@@ -5,9 +5,11 @@
 using BIF = st::EVENT<bool, int, float>;
 
 class TEST : public BIF::LISTENER {
+public:
+	std::string name;
 	void notify(bool b, int i, float f)
 	{
-		std::cout << b << "\t" << i << "\t" << f << std::endl;
+		std::cout << name << "\t" << b << "\t" << i << "\t" << f << std::endl;
 	}
 };
 
@@ -16,6 +18,7 @@ int main()
 	BIF evt;
 
 	TEST t;
+	t.name = "TEST1";
 
 	std::cout << "Test1:\n";
 	evt.invoke(true, 2, 1.5f);
@@ -26,11 +29,13 @@ int main()
 	evt.invoke(true, 2, 1.5f);
 
 	TEST t2(t);
+	t2.name = "TEST2";
 
 	std::cout << "Test3:\n";
 	evt.invoke(true, 2, 1.5f);
 
 	TEST t3(std::move(t));
+	t3.name = "TEST3";
 
 	std::cout << "Test4:\n";
 	evt.invoke(true, 2, 1.5f);

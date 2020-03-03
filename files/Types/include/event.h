@@ -21,11 +21,12 @@ namespace st
 		EVENT(EVENT&&) noexcept;
 		~EVENT();
 
+		void add_listener(LISTENER*);
+		void remove_listener(LISTENER*);
+		void remove_all_listeners();
+
 		void invoke(PARAMS...) const;
 	private:
-		void add_listener(LISTENER* listener);
-		void remove_listener(LISTENER* listener);
-
 		std::set<LISTENER*> m_listeners;
 	};
 
@@ -40,6 +41,7 @@ namespace st
 
 		void listen(EVENT*);
 		void stop_listening(EVENT*);
+		void stop_listening();
 	protected:
 		virtual void notify(PARAMS...) = 0;
 
@@ -57,47 +59,68 @@ namespace st
 	{
 	}
 
-	//When moved, update the listeners to reflect this
+	//When moved, remove listeners from old event and add to this one
 	template<typename ...PARAMS>
 	inline EVENT<PARAMS...>::EVENT(EVENT&& other) noexcept
 	{
-		for (auto listener_iter = other.m_listeners.begin(); listener_iter != other.m_listeners.end(); ++listener_iter)
+		auto begin = other.m_listeners.begin();
+		auto end = other.m_listeners.end();
+
+		for (auto listener_iter = begin; listener_iter != end; ++listener_iter)
 		{
 			auto& listener = *listener_iter;
-			listener->stop_listening(&other);
-			listener->listen(this);
+			add_listener(listener);
+			listener->m_listenees.erase(&other);
 		}
+		other.m_listeners.erase(begin, end);
 	}
 
+	//Inform listeners we are no longer reporting
 	template<typename ...PARAMS>
 	inline EVENT<PARAMS...>::~EVENT()
 	{
-		for (auto listener_iter = m_listeners.begin(); listener_iter != m_listeners.end(); ++listener_iter)
-		{
-			auto& listener = *listener_iter;
-			listener->stop_listening(this);
-		}
-	}
-
-	template<typename ... PARAMS>
-	void EVENT<PARAMS...>::invoke(PARAMS... params) const
-	{
-		for (auto listener_iter = m_listeners.begin(); listener_iter != m_listeners.end(); ++listener_iter)
-		{
-			(*listener_iter)->notify(params...);
-		}
+		remove_all_listeners();
 	}
 
 	template<typename ...PARAMS>
 	inline void EVENT<PARAMS...>::add_listener(LISTENER* listener)
 	{
 		m_listeners.emplace(listener);
+		listener->m_listenees.emplace(this);
 	}
 
 	template<typename ...PARAMS>
 	inline void EVENT<PARAMS...>::remove_listener(LISTENER* listener)
 	{
 		m_listeners.erase(listener);
+		listener->m_listenees.erase(this);
+	}
+
+	template<typename ...PARAMS>
+	inline void EVENT<PARAMS...>::remove_all_listeners()
+	{
+		auto begin = m_listeners.begin();
+		auto end = m_listeners.end();
+
+		for (auto listener_iter = begin; listener_iter != end; ++listener_iter)
+		{
+			auto& listener = *listener_iter;
+			listener->m_listenees.erase(this);
+		}
+		m_listeners.erase(begin, end);
+	}
+
+	template<typename ... PARAMS>
+	inline void EVENT<PARAMS...>::invoke(PARAMS... params) const
+	{
+		auto begin = m_listeners.begin();
+		auto end = m_listeners.end();
+
+		for (auto listener_iter = begin; listener_iter != end; ++listener_iter)
+		{
+			auto& listener = *listener_iter;
+			listener->notify(params...);
+		}
 	}
 
 	//Listener
@@ -106,10 +129,13 @@ namespace st
 	template<typename ...PARAMS>
 	inline EVENT<PARAMS...>::LISTENER::LISTENER(const LISTENER& other)
 	{
-		for (auto listenee_iter = other.m_listenees.begin(); listenee_iter != other.m_listenees.end(); ++listenee_iter)
+		auto begin = other.m_listenees.begin();
+		auto end = other.m_listenees.end();
+
+		for (auto listenee_iter = begin; listenee_iter != end; ++listenee_iter)
 		{
 			auto& listenee = *listenee_iter;
-			listenee->add_listener(this);
+			listen(listenee);
 		}
 	}
 
@@ -117,36 +143,50 @@ namespace st
 	template<typename ...PARAMS>
 	inline EVENT<PARAMS...>::LISTENER::LISTENER(LISTENER&& other) noexcept
 	{
-		for (auto listenee_iter = other.m_listenees.begin(); listenee_iter != other.m_listenees.end(); ++listenee_iter)
+		auto begin = other.m_listenees.begin();
+		auto end = other.m_listenees.end();
+
+		for (auto listenee_iter = begin; listenee_iter != end; ++listenee_iter)
 		{
 			auto& listenee = *listenee_iter;
-			listenee->remove_listener(&other);
-			listenee->add_listener(this);
+			listen(listenee);
+			listenee->m_listeners.erase(&other);
 		}
+		other.m_listenees.erase(begin, end);
 	}
 
 	template<typename ...PARAMS>
 	inline EVENT<PARAMS...>::LISTENER::~LISTENER()
 	{
-		for (auto listenee_iter = m_listenees.begin(); listenee_iter != m_listenees.end(); ++listenee_iter)
-		{
-			auto& listenee = *listenee_iter;
-			listenee->remove_listener(this);
-		}
+		stop_listening();
 	}
 
 	template<typename ...PARAMS>
 	inline void EVENT<PARAMS...>::LISTENER::listen(EVENT* evt)
 	{
-		evt->add_listener(this);
+		evt->m_listeners.emplace(this);
 		m_listenees.emplace(evt);
 	}
 
 	template<typename ...PARAMS>
 	inline void EVENT<PARAMS...>::LISTENER::stop_listening(EVENT* evt)
 	{
-		evt->remove_listener(this);
+		evt->m_listeners.erase(this);
 		m_listenees.erase(evt);
+	}
+
+	template<typename ...PARAMS>
+	inline void EVENT<PARAMS...>::LISTENER::stop_listening()
+	{
+		auto begin = m_listenees.begin();
+		auto end = m_listenees.end();
+
+		for (auto listenee_iter = begin; listenee_iter != end; ++listenee_iter)
+		{
+			auto& listenee = *listenee_iter;
+			listenee->m_listeners.erase(this);
+		}
+		m_listenees.erase(begin, end);
 	}
 
 }
