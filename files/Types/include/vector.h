@@ -5,10 +5,6 @@ namespace st {
 	//generic 3d vector type
 	template<typename TYPE>
 	struct VECTOR3 {
-		TYPE x = 0;
-		TYPE y = 0;
-		TYPE z = 0;
-
 		static VECTOR3 zero();
 		static VECTOR3 unit_x();
 		static VECTOR3 unit_y();
@@ -36,14 +32,14 @@ namespace st {
 		TYPE abs() const;
 		VECTOR3 normalize() const;
 
+		TYPE x = 0;
+		TYPE y = 0;
+		TYPE z = 0;
 	};
 
 	//generic 2d vector type
 	template<typename TYPE>
 	struct VECTOR2 {
-		TYPE x = 0;
-		TYPE y = 0;
-
 		static VECTOR2 zero();
 		static VECTOR2 unit_x();
 		static VECTOR2 unit_y();
@@ -67,6 +63,9 @@ namespace st {
 
 		TYPE abs() const;
 		VECTOR2 normalize() const;
+
+		TYPE x = 0;
+		TYPE y = 0;
 	};
 
 	//typenames for common use cases
