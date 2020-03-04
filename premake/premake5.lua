@@ -11,6 +11,7 @@ workspace "SwiftEngine"
 		"debug",
 		"release"
 	}
+	cppdialect			"C++17"
 	
 	--Default project settings--
 	language			"C++"
