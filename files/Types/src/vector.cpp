@@ -37,6 +37,16 @@ namespace st {
 	{}
 
 	template<typename TYPE>
+	VECTOR3<TYPE> VECTOR3<TYPE>::operator-() const
+	{
+		return VECTOR3(
+			-x,
+			-y,
+			-z
+		);
+	}
+
+	template<typename TYPE>
 	VECTOR3<TYPE> VECTOR3<TYPE>::operator+(const VECTOR3& other) const
 	{
 		return VECTOR3(
@@ -194,6 +204,15 @@ namespace st {
 		: x(x_in)
 		, y(y_in)
 	{}
+
+	template<typename TYPE>
+	VECTOR2<TYPE> VECTOR2<TYPE>::operator-() const
+	{
+		return VECTOR2(
+			-x,
+			-y
+		);
+	}
 
 	template<typename TYPE>
 	VECTOR2<TYPE> VECTOR2<TYPE>::operator+(const VECTOR2& other) const

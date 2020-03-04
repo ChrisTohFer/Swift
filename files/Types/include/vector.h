@@ -13,6 +13,8 @@ namespace st {
 		VECTOR3();
 		VECTOR3(TYPE x_in, TYPE y_in, TYPE z_in);
 
+		VECTOR3 operator-() const;
+
 		VECTOR3 operator+(const VECTOR3&) const;
 		VECTOR3 operator-(const VECTOR3&) const;
 		VECTOR3& operator+=(const VECTOR3&);
@@ -46,6 +48,8 @@ namespace st {
 
 		VECTOR2();
 		VECTOR2(TYPE x_in, TYPE y_in);
+
+		VECTOR2 operator-() const;
 
 		VECTOR2 operator+(const VECTOR2&) const;
 		VECTOR2 operator-(const VECTOR2&) const;
