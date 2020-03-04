@@ -13,9 +13,10 @@ workspace "SwiftEngine"
 	}
 	
 	--Default project settings--
-	language		"C++"
-	characterset	"Unicode"
-	warnings		"Extra"
+	language			"C++"
+	characterset		"Unicode"
+	warnings			"Extra"
+	exceptionhandling	"Off"
 	
 	--Preprocessor--
 	filter "configurations:debug"

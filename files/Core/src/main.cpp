@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Types/include/vector.h"
 #include "Types/include/event.h"
+#include "Types/include/static_map.h"
 
 using BIF = st::EVENT<bool, int, float>;
 
@@ -11,6 +12,15 @@ public:
 	{
 		std::cout << name << "\t" << b << "\t" << i << "\t" << f << std::endl;
 	}
+};
+
+enum class FRUIT{
+	BANNANA,
+	ORANGE,
+	APPLE,
+	PEAR,
+
+	ENUM_SIZE
 };
 
 int main()
@@ -47,4 +57,11 @@ int main()
 
 	std::cout << "Test6:\n";
 	evt2.invoke(true, 2, 1.5f);
+
+	STATIC_MAP<FRUIT, const char*> map;
+	map[FRUIT::APPLE] = "apple";
+	map[FRUIT::BANNANA] = "bannana";
+	map[FRUIT::ORANGE] = "orange";
+	map[FRUIT::PEAR] = "pear";
+	map[FRUIT::ENUM_SIZE] = "size";
 }
