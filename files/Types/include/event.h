@@ -2,7 +2,7 @@
 
 #include <set>
 
-namespace st
+namespace SWIFT
 {
 
 	//Event class can be invoked to call the notify() function on all listeners that are listening to it

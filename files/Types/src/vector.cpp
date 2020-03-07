@@ -1,7 +1,7 @@
 #include "vector.h"
 #include <math.h>
 
-namespace st {
+namespace SWIFT {
 
 	//VECTOR3
 

@@ -1,7 +1,9 @@
 #pragma once
 #include <type_traits>
 
-namespace st {
+//Note that this probably shouldn't be used, as it is functionally no different from using a struct (besides tying the elements to an existing enum)
+
+namespace SWIFT {
 
 	//Create an array with a value of type VALUE for each entry in an enum class
 	//ENUM_KEY must have a member called ENUM_SIZE whose underlying value is the number of values in the enum

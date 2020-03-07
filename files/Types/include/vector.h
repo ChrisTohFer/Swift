@@ -1,6 +1,6 @@
 #pragma once
 
-namespace st {
+namespace SWIFT {
 
 	//generic 3d vector type
 	template<typename TYPE>
