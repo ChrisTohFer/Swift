@@ -47,7 +47,8 @@ workspace "SwiftEngine"
 	filter{}
 	
 	--Projects--
-	generate_project("Core", "ConsoleApp")
+	group			"Core Projects"
+	generate_project("Startup", "ConsoleApp")
 	generate_project("Types", "StaticLib")
 	
 ---------------------------------------------

@@ -63,8 +63,6 @@ project (project_name)
 	if file_exists(project_override) then
 		dofile(project_override)
 	end
-	
-project ("*")
 end
 
 function import_projects(project_names)
