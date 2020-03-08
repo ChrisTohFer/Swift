@@ -1,11 +1,15 @@
 #pragma once
 
 #include "Types/include/id.h"
+#include <type_traits>
 
 namespace SWIFT::ENGINE
 {
 	class COMPONENT;
 	using COMPONENT_ID = ID<COMPONENT>;
+
+	template<typename COMPONENT_TYPE>
+	using IS_COMPONENT_TYPE = std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int>;
 
 	class COMPONENT
 	{

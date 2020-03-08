@@ -24,11 +24,11 @@ namespace SWIFT::ENGINE {
 
 		//Component access and edit
 
-		template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int> = 0>
+		template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE> = 0>
 		COMPONENT_TYPE& add_component();
-		template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int> = 0>
+		template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE> = 0>
 		void remove_component();
-		template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int> = 0>
+		template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE> = 0>
 		COMPONENT_TYPE* find_component();
 
 	};
@@ -36,7 +36,7 @@ namespace SWIFT::ENGINE {
 	//FUNCTIONS
 
 	//Adds component of the specified type and returns a reference
-	template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int>>
+	template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE>>
 	inline COMPONENT_TYPE& ENTITY::add_component()
 	{
 		auto ptr = new COMPONENT_TYPE();
@@ -46,7 +46,7 @@ namespace SWIFT::ENGINE {
 	}
 
 	//Removes the first encountered component of the specified type
-	template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int>>
+	template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE>>
 	inline void ENTITY::remove_component()
 	{
 		auto begin = m_components.begin();
@@ -63,7 +63,7 @@ namespace SWIFT::ENGINE {
 	}
 
 	//Returns the first encountered component of the specified type
-	template<typename COMPONENT_TYPE, std::enable_if_t<std::is_base_of<COMPONENT, COMPONENT_TYPE>::value, int>>
+	template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE>>
 	inline COMPONENT_TYPE* ENTITY::find_component()
 	{
 		auto begin = m_components.begin();
