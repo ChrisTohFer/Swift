@@ -1,15 +1,20 @@
 #include "entity.h"
 
-namespace SWIFT::ENGINE
+void SWIFT::ENGINE::ENTITY::update()
 {
-
-	void ENTITY::update()
+	auto begin = m_components.begin();
+	auto end = m_components.end();
+	for (auto it = begin; it != end; ++it)
 	{
-		auto begin = m_components.begin();
-		auto end = m_components.end();
-		for (auto it = begin; it != end; ++it)
-		{
-			it->get()->update();
-		}
+		it->get()->update();
 	}
+}
+
+//Moves an existing component onto this entity
+void SWIFT::ENGINE::ENTITY::move_component(UNIQUE_COMPONENT&& component)
+{
+	if (component.get() == nullptr)
+		return;
+
+	m_components.push_back(std::move(component));
 }

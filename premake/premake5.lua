@@ -18,6 +18,7 @@ workspace "SwiftEngine"
 	characterset		"Unicode"
 	warnings			"Extra"
 	exceptionhandling	"Off"
+	stringpooling		"On"
 	
 	--Preprocessor--
 	filter "configurations:debug"
