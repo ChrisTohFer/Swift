@@ -23,11 +23,11 @@ workspace "SwiftEngine"
 	--Preprocessor--
 	filter "configurations:debug"
 		defines{
-			"CONFIGURATION=DEBUG"
+			"CONFIGURATION=DEBUG",
 		}
 	filter "configurations:release"
 		defines{
-			"CONFIGURATION=RELEASE"
+			"CONFIGURATION=RELEASE",
 		}
 	filter{}
 	
@@ -49,8 +49,10 @@ workspace "SwiftEngine"
 	
 	--Projects--
 	group			"Core Projects"
+	generate_project("GlobalHeaders", "StaticLib")
 	generate_project("Startup", "ConsoleApp")
 	generate_project("Types", "StaticLib")
+	generate_project("FileIO", "StaticLib")
 	
 ---------------------------------------------
 

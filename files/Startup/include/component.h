@@ -25,6 +25,7 @@ namespace SWIFT::ENGINE
 
 	public:
 		COMPONENT_BASE(TYPE_ID);
+		virtual ~COMPONENT_BASE() = default;
 
 		static UNIQUE_COMPONENT create_from_name(const char*);
 
