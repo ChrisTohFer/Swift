@@ -4,6 +4,11 @@
 
 //SERIALISER
 
+SWIFT::IO::SERIALISER::SERIALISER(const std::string& path)
+{
+	open(path);
+}
+
 bool SWIFT::IO::SERIALISER::open(const std::string& path)
 {
 	close();
@@ -83,6 +88,11 @@ void SWIFT::IO::SERIALISER::serialize(const std::string& str)
 }
 
 //DESERIALISER
+
+SWIFT::IO::DESERIALISER::DESERIALISER(const std::string& path)
+{
+	open(path);
+}
 
 bool SWIFT::IO::DESERIALISER::open(const std::string& path)
 {
@@ -168,46 +178,46 @@ void SWIFT::IO::DESERIALISER::deserialize(SERIALISABLE& object)
 		object.deserialise(*this);
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(float& val)
+void SWIFT::IO::DESERIALISER::deserialize(float& ref)
 {
 	if (verify_type<TYPE::FLOAT>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(double& val)
+void SWIFT::IO::DESERIALISER::deserialize(double& ref)
 {
 	if (verify_type<TYPE::DOUBLE>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(bool& val)
+void SWIFT::IO::DESERIALISER::deserialize(bool& ref)
 {
 	if (verify_type<TYPE::BOOL>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int8_t& val)
+void SWIFT::IO::DESERIALISER::deserialize(std::int8_t& ref)
 {
 	if (verify_type<TYPE::INT8>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int16_t& val)
+void SWIFT::IO::DESERIALISER::deserialize(std::int16_t& ref)
 {
 	if (verify_type<TYPE::INT16>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int32_t& val)
+void SWIFT::IO::DESERIALISER::deserialize(std::int32_t& ref)
 {
 	if (verify_type<TYPE::INT32>())
-		stream >> val;
+		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int64_t& val)
+void SWIFT::IO::DESERIALISER::deserialize(std::int64_t& ref)
 {
 	if (verify_type<TYPE::INT64>())
-		stream >> val;
+		stream >> ref;
 }
 
 void SWIFT::IO::DESERIALISER::deserialize(std::string& str)

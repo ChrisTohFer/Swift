@@ -30,6 +30,9 @@ namespace SWIFT::IO
 		std::ofstream stream;
 
 	public:
+		SERIALISER() = default;
+		SERIALISER(const std::string& path);
+
 		bool open(const std::string& path);
 		void close();
 
@@ -55,6 +58,9 @@ namespace SWIFT::IO
 		std::ifstream stream;
 
 	public:
+		DESERIALISER() = default;
+		DESERIALISER(const std::string& path);
+
 		bool open(const std::string& path);
 		void close();
 
