@@ -6,7 +6,7 @@
 #include <memory>
 #include <map>
 
-namespace SWIFT::ENGINE
+namespace SWIFT::EC
 {
 	//Types
 	class COMPONENT_BASE;
@@ -53,7 +53,7 @@ namespace SWIFT::ENGINE
 //DEFINITIONS
 
 template<typename DERIVED>
-bool SWIFT::ENGINE::COMPONENT<DERIVED>::static_initialize()
+bool SWIFT::EC::COMPONENT<DERIVED>::static_initialize()
 {
 	auto ptr = UNIQUE_COMPONENT(new DERIVED());
 	auto name = ptr->name();
@@ -62,12 +62,12 @@ bool SWIFT::ENGINE::COMPONENT<DERIVED>::static_initialize()
 }
 
 template<typename DERIVED>
-SWIFT::ENGINE::COMPONENT<DERIVED>::COMPONENT()
+SWIFT::EC::COMPONENT<DERIVED>::COMPONENT()
 	: COMPONENT_BASE(get_type_id<DERIVED>())
 {}
 
 template<typename DERIVED>
-SWIFT::ENGINE::UNIQUE_COMPONENT SWIFT::ENGINE::COMPONENT<DERIVED>::create_new()
+SWIFT::EC::UNIQUE_COMPONENT SWIFT::EC::COMPONENT<DERIVED>::create_new()
 {
 	return UNIQUE_COMPONENT(new DERIVED());
 }

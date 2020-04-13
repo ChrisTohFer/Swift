@@ -8,7 +8,7 @@
 #include "component.h"
 
 
-namespace SWIFT::ENGINE {
+namespace SWIFT::EC {
 
 	//Types
 	class ENTITY;
@@ -44,8 +44,8 @@ namespace SWIFT::ENGINE {
 //FUNCTIONS
 
 //Adds component of the specified type and returns a reference
-template<typename COMPONENT_TYPE, SWIFT::ENGINE::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
-inline COMPONENT_TYPE& SWIFT::ENGINE::ENTITY::add_component()
+template<typename COMPONENT_TYPE, SWIFT::EC::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
+inline COMPONENT_TYPE& SWIFT::EC::ENTITY::add_component()
 {
 	auto ptr = new COMPONENT_TYPE();
 	m_components.push_back(UNIQUE_COMPONENT(ptr));
@@ -53,8 +53,8 @@ inline COMPONENT_TYPE& SWIFT::ENGINE::ENTITY::add_component()
 }
 
 //Removes the first encountered component of the specified type
-template<typename COMPONENT_TYPE, SWIFT::ENGINE::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
-inline void SWIFT::ENGINE::ENTITY::remove_component()
+template<typename COMPONENT_TYPE, SWIFT::EC::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
+inline void SWIFT::EC::ENTITY::remove_component()
 {
 	auto begin = m_components.begin();
 	auto end = m_components.end();
@@ -70,8 +70,8 @@ inline void SWIFT::ENGINE::ENTITY::remove_component()
 }
 
 //Returns the first encountered component of the specified type
-template<typename COMPONENT_TYPE, SWIFT::ENGINE::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
-inline COMPONENT_TYPE* SWIFT::ENGINE::ENTITY::find_component()
+template<typename COMPONENT_TYPE, SWIFT::EC::IS_COMPONENT_TYPE<COMPONENT_TYPE>>
+inline COMPONENT_TYPE* SWIFT::EC::ENTITY::find_component()
 {
 	auto begin = m_components.begin();
 	auto end = m_components.end();
