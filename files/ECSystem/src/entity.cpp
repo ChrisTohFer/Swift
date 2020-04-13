@@ -1,4 +1,6 @@
 #include "entity.h"
+#include "catalogue.h"
+#include "GlobalHeaders/macros.h"
 
 void SWIFT::EC::ENTITY::update()
 {
@@ -7,6 +9,20 @@ void SWIFT::EC::ENTITY::update()
 	for (auto it = begin; it != end; ++it)
 	{
 		it->get()->update();
+	}
+}
+
+//Add a component onto this entity by name
+void SWIFT::EC::ENTITY::add_component(const NAME_TYPE& name)
+{
+	auto ptr = CATALOGUE::create_new(name);
+	if (ptr != nullptr)
+	{
+		move_component(std::move(ptr));
+	}
+	else
+	{
+		CONSOLE_WARNING("Attempted to add a non-existing component");
 	}
 }
 

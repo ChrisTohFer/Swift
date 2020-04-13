@@ -12,14 +12,18 @@ namespace SWIFT::EC
 	class COMPONENT_BASE;
 	using COMPONENT_ID = ID<COMPONENT_BASE>;
 	using UNIQUE_COMPONENT = std::unique_ptr<COMPONENT_BASE>;
+	using NAME_TYPE = const char*;
+
+	//Forward declarations
+	namespace CATALOGUE
+	{
+		void add_component(UNIQUE_COMPONENT);
+	}
 
 	//Base class for component, provides access to functions
 	class COMPONENT_BASE
 	{
 	protected:
-		using COMPONENT_MAP = std::map<const char*, UNIQUE_COMPONENT>;
-		static COMPONENT_MAP& component_type_map();
-
 		const TYPE_ID type_id;
 		const COMPONENT_ID id;
 
@@ -27,22 +31,19 @@ namespace SWIFT::EC
 		COMPONENT_BASE(TYPE_ID);
 		virtual ~COMPONENT_BASE() = default;
 
-		static UNIQUE_COMPONENT create_from_name(const char*);
-
 		virtual UNIQUE_COMPONENT create_new() = 0;
-		virtual const char* name() const = 0;
+		virtual NAME_TYPE name() const = 0;
 		virtual void update() {};
 
 		bool is_type(TYPE_ID);
 	};
-
 
 	//crtp base class for components
 	template<typename DERIVED>
 	class COMPONENT : public COMPONENT_BASE
 	{
 		static bool static_initialize();
-		static inline bool dummy_var = static_initialize();	//Initialized during static initialization, allowing us to call static_initialize for every component type
+		static inline bool dummy_var = static_initialize();	//Dummy var allows us to call static_initialize for every derived type
 	
 	public:
 		COMPONENT();
@@ -55,9 +56,7 @@ namespace SWIFT::EC
 template<typename DERIVED>
 bool SWIFT::EC::COMPONENT<DERIVED>::static_initialize()
 {
-	auto ptr = UNIQUE_COMPONENT(new DERIVED());
-	auto name = ptr->name();
-	component_type_map().emplace(std::make_pair(name, std::move(ptr)));
+	CATALOGUE::add_component(UNIQUE_COMPONENT(new DERIVED()));
 	return true;
 }
 

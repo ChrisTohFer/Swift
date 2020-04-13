@@ -36,6 +36,7 @@ namespace SWIFT::EC {
 		template<typename COMPONENT_TYPE, IS_COMPONENT_TYPE<COMPONENT_TYPE> = 0>
 		COMPONENT_TYPE* find_component();
 
+		void add_component(const NAME_TYPE&);
 		void move_component(UNIQUE_COMPONENT&&);
 	};
 
