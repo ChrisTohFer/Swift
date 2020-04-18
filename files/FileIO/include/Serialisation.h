@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <fstream>
+#include <memory>
+#include <tuple>
 
 namespace SWIFT::IO
 {
@@ -24,6 +26,10 @@ namespace SWIFT::IO
 	class SERIALISABLE;
 	class SERIALISER;
 	class DESERIALISER;
+
+	using UNIQUE_SERIALISABLE = std::unique_ptr<SERIALISABLE>;
+
+	//SERIALISER class for sending information to a stream
 
 	class SERIALISER
 	{
@@ -53,6 +59,8 @@ namespace SWIFT::IO
 		void serialize(const std::string&);
 	};
 
+	//DESERIALISER class for collecting information from a stream
+
 	class DESERIALISER
 	{
 		std::ifstream stream;
@@ -81,10 +89,68 @@ namespace SWIFT::IO
 		void deserialize(std::string&);
 	};
 
+	//SERIALISABLE base class for encapsulating more complex types we want to be able to serialise
+	
 	class SERIALISABLE
 	{
 	public:
 		virtual void serialise(SERIALISER&) const = 0;
 		virtual void deserialise(DESERIALISER&) = 0;
+
+		virtual ~SERIALISABLE() = default;
 	};
+
+	//SIMPLIFIED serialisable class to unify definitions of serialise and deserialise for trivial objects via a variadic constructor
+
+	template<typename ... MEMBERS>
+	class SIMPLIFIED : public SERIALISABLE
+	{
+		std::tuple<MEMBERS&...> m_members;	//Store reference to each member
+
+	public:
+		SIMPLIFIED(MEMBERS&...);
+		virtual void serialise(SERIALISER&) const;
+		virtual void deserialise(DESERIALISER&);
+	};
+
+	template<typename ... ARGS>
+	UNIQUE_SERIALISABLE simplify(ARGS&...);
+}
+
+//SWIFT::IO::SIMPLIFIED
+
+template<typename ... MEMBERS>
+SWIFT::IO::SIMPLIFIED<MEMBERS...>::SIMPLIFIED(MEMBERS&... members)
+	: m_members(members...)
+{
+}
+
+template<typename ... MEMBERS>
+void SWIFT::IO::SIMPLIFIED<MEMBERS...>::serialise(SERIALISER& serialiser) const
+{
+	std::apply(
+		[&](MEMBERS& ... args) {
+			(serialiser.serialize(args), ...);	//calls serialiser.serialise() for all args
+		},
+		m_members
+	);
+}
+
+template<typename ... MEMBERS>
+void SWIFT::IO::SIMPLIFIED<MEMBERS...>::deserialise(DESERIALISER& deserialiser)
+{
+	std::apply(
+		[&](MEMBERS& ... args) {
+			(deserialiser.deserialize(args), ...);	//calls deserialiser.deserialise() for all args
+		},
+		m_members
+	);
+}
+
+//Non-member functions
+
+template<typename ... ARGS>
+SWIFT::IO::UNIQUE_SERIALISABLE SWIFT::IO::simplify<ARGS...>(ARGS&... args)
+{
+	return UNIQUE_SERIALISABLE(new SIMPLIFIED(args...));
 }
