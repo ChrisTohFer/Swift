@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GlobalHeaders/macros.h"
+
 #include <vector>
 #include <fstream>
 #include <memory>
@@ -22,7 +24,8 @@ namespace SWIFT::IO
 		UINT16,
 		UINT32,
 		UINT64,
-		STRING
+		STRING,
+		VECTOR
 	};
 
 	class SERIALISABLE;
@@ -64,6 +67,10 @@ namespace SWIFT::IO
 		void serialise(std::uint32_t);
 		void serialise(std::uint64_t);
 		void serialise(const std::string&);
+
+		template<typename T>
+		void serialise(std::vector<T>&);
+
 		void serialise(const char*);		//undefined as SWIFT does not support c_string serialisation, convert to std::string instead
 	};
 
@@ -99,6 +106,9 @@ namespace SWIFT::IO
 		void deserialise(std::uint32_t&);
 		void deserialise(std::uint64_t&);
 		void deserialise(std::string&);
+
+		template<typename T>
+		void deserialise(std::vector<T>&);
 	};
 
 	//SERIALISABLE base class for encapsulating more complex types we want to be able to serialise
@@ -127,6 +137,62 @@ namespace SWIFT::IO
 
 	template<typename ... ARGS>
 	UNIQUE_SERIALISABLE simplify(ARGS&...);
+}
+
+//SWIFT::IO::SERIALISER
+
+template<SWIFT::IO::TYPE type>
+void SWIFT::IO::SERIALISER::register_type()	//Provide a bit more context so we can detect errors when deserialising
+{
+	pad();
+	stream << std::underlying_type<TYPE>::type(type);
+	pad();
+}
+
+template<typename T>
+void SWIFT::IO::SERIALISER::serialise(std::vector<T>& vec)
+{
+	register_type<TYPE::VECTOR>();
+	serialise(vec.size());
+	for (auto i = 0u; i < vec.size(); ++i)
+	{
+		serialise(vec[i]);
+	}
+}
+
+//SWIFT::IO::DESERIALISER
+
+template<SWIFT::IO::TYPE type_required>
+bool SWIFT::IO::DESERIALISER::verify_type()	//Don't read data that is unexpected; we can always skip it later
+{
+	std::underlying_type<TYPE>::type type(-1);
+	auto pos = stream.tellg();
+
+	stream >> type;
+
+	if (type_required != TYPE(type))
+	{
+		CONSOLE_WARNING("encountered an incorrect type during deserialisation.")
+			stream.seekg(pos);
+		return false;
+	}
+
+	return true;
+}
+
+template<typename T>
+void SWIFT::IO::DESERIALISER::deserialise(std::vector<T>& vec)
+{
+	if (!verify_type<TYPE::VECTOR>())
+		return;
+
+	size_t size;
+	deserialise(size);
+	for (auto i = 0u; i < size; ++i)
+	{
+		vec.push_back(T());
+		deserialise(vec[i]);
+	}
 }
 
 //SWIFT::IO::SIMPLIFIED

@@ -1,5 +1,4 @@
 #include "Serialisation.h"
-#include "GlobalHeaders/macros.h"
 #include <string>
 
 //SERIALISER
@@ -24,14 +23,6 @@ void SWIFT::IO::SERIALISER::close()
 void SWIFT::IO::SERIALISER::pad()
 {
 	stream << " ";
-}
-
-template<SWIFT::IO::TYPE type>
-void SWIFT::IO::SERIALISER::register_type()	//Provide a bit more context so we can detect errors when deserialising
-{
-	pad();
-	stream << std::underlying_type<TYPE>::type(type);
-	pad();
 }
 
 void SWIFT::IO::SERIALISER::add_separator()
@@ -136,24 +127,6 @@ bool SWIFT::IO::DESERIALISER::open(const std::string& path)
 void SWIFT::IO::DESERIALISER::close()
 {
 	stream.close();
-}
-
-template<SWIFT::IO::TYPE type_required>
-bool SWIFT::IO::DESERIALISER::verify_type()	//Don't read data that is unexpected; we can always skip it later
-{
-	std::underlying_type<TYPE>::type type(-1);
-	auto pos = stream.tellg();
-
-	stream >> type;
-	
-	if (type_required != TYPE(type))
-	{
-		CONSOLE_WARNING("encountered an incorrect type during deserialisation.")
-		stream.seekg(pos);
-		return false;
-	}
-	
-	return true;
 }
 
 void SWIFT::IO::DESERIALISER::next_separator()
