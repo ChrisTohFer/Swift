@@ -29,8 +29,9 @@ std::vector<SWIFT::EC::NAME_TYPE> SWIFT::EC::CATALOGUE::names()
 
 SWIFT::EC::UNIQUE_COMPONENT SWIFT::EC::CATALOGUE::create_new(const NAME_TYPE& name)
 {
-	if (map().find(name) != map().end())
-		return map().operator[](name)->create_new();
+	auto component_iterator = map().find(name);
+	if (component_iterator != map().end())
+		return component_iterator->second->create_new();
 	else
 		return nullptr;
 }

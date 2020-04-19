@@ -7,8 +7,9 @@
 
 namespace SWIFT::IO
 {
-	enum class TYPE : std::int8_t
+	enum class TYPE : std::int32_t
 	{
+		SEPARATOR,
 		SERIALISABLE,
 		FLOAT,
 		DOUBLE,
@@ -17,10 +18,11 @@ namespace SWIFT::IO
 		INT16,
 		INT32,
 		INT64,
-		STRING,
-		C_STRING,
-
-		SEPARATOR = std::numeric_limits<std::int8_t>::max()
+		UINT8,
+		UINT16,
+		UINT32,
+		UINT64,
+		STRING
 	};
 
 	class SERIALISABLE;
@@ -43,20 +45,26 @@ namespace SWIFT::IO
 		void close();
 
 	private:
+		void pad();
 		template<TYPE type>
 		void register_type();
 
 	public:
 		void add_separator();
-		void serialize(const SERIALISABLE&);
-		void serialize(float);
-		void serialize(double);
-		void serialize(bool);
-		void serialize(std::int8_t);
-		void serialize(std::int16_t);
-		void serialize(std::int32_t);
-		void serialize(std::int64_t);
-		void serialize(const std::string&);
+		void serialise(SERIALISABLE&);
+		void serialise(float);
+		void serialise(double);
+		void serialise(bool);
+		void serialise(std::int8_t);
+		void serialise(std::int16_t);
+		void serialise(std::int32_t);
+		void serialise(std::int64_t);
+		void serialise(std::uint8_t);
+		void serialise(std::uint16_t);
+		void serialise(std::uint32_t);
+		void serialise(std::uint64_t);
+		void serialise(const std::string&);
+		void serialise(const char*);		//undefined as SWIFT does not support c_string serialisation, convert to std::string instead
 	};
 
 	//DESERIALISER class for collecting information from a stream
@@ -78,15 +86,19 @@ namespace SWIFT::IO
 
 	public:
 		void next_separator();
-		void deserialize(SERIALISABLE&);
-		void deserialize(float&);
-		void deserialize(double&);
-		void deserialize(bool&);
-		void deserialize(std::int8_t&);
-		void deserialize(std::int16_t&);
-		void deserialize(std::int32_t&);
-		void deserialize(std::int64_t&);
-		void deserialize(std::string&);
+		void deserialise(SERIALISABLE&);
+		void deserialise(float&);
+		void deserialise(double&);
+		void deserialise(bool&);
+		void deserialise(std::int8_t&);
+		void deserialise(std::int16_t&);
+		void deserialise(std::int32_t&);
+		void deserialise(std::int64_t&);
+		void deserialise(std::uint8_t&);
+		void deserialise(std::uint16_t&);
+		void deserialise(std::uint32_t&);
+		void deserialise(std::uint64_t&);
+		void deserialise(std::string&);
 	};
 
 	//SERIALISABLE base class for encapsulating more complex types we want to be able to serialise
@@ -94,7 +106,7 @@ namespace SWIFT::IO
 	class SERIALISABLE
 	{
 	public:
-		virtual void serialise(SERIALISER&) const = 0;
+		virtual void serialise(SERIALISER&) = 0;
 		virtual void deserialise(DESERIALISER&) = 0;
 
 		virtual ~SERIALISABLE() = default;
@@ -109,7 +121,7 @@ namespace SWIFT::IO
 
 	public:
 		SIMPLIFIED(MEMBERS&...);
-		virtual void serialise(SERIALISER&) const;
+		virtual void serialise(SERIALISER&);
 		virtual void deserialise(DESERIALISER&);
 	};
 
@@ -126,11 +138,11 @@ SWIFT::IO::SIMPLIFIED<MEMBERS...>::SIMPLIFIED(MEMBERS&... members)
 }
 
 template<typename ... MEMBERS>
-void SWIFT::IO::SIMPLIFIED<MEMBERS...>::serialise(SERIALISER& serialiser) const
+void SWIFT::IO::SIMPLIFIED<MEMBERS...>::serialise(SERIALISER& serialiser)
 {
 	std::apply(
 		[&](MEMBERS& ... args) {
-			(serialiser.serialize(args), ...);	//calls serialiser.serialise() for all args
+			(serialiser.serialise(args), ...);	//calls serialiser.serialise() for all args
 		},
 		m_members
 	);
@@ -141,7 +153,7 @@ void SWIFT::IO::SIMPLIFIED<MEMBERS...>::deserialise(DESERIALISER& deserialiser)
 {
 	std::apply(
 		[&](MEMBERS& ... args) {
-			(deserialiser.deserialize(args), ...);	//calls deserialiser.deserialise() for all args
+			(deserialiser.deserialise(args), ...);	//calls deserialiser.deserialise() for all args
 		},
 		m_members
 	);

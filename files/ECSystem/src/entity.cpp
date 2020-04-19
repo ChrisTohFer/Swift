@@ -34,3 +34,34 @@ void SWIFT::EC::ENTITY::move_component(UNIQUE_COMPONENT&& component)
 
 	m_components.push_back(std::move(component));
 }
+
+void SWIFT::EC::ENTITY::serialise(IO::SERIALISER& serialiser)
+{
+	size_t size = m_components.size();
+
+	serialiser.serialise(size);
+	for (size_t i = 0; i < size; ++i)
+	{
+		serialiser.serialise(std::string(m_components[i]->name()));
+		serialiser.serialise(*m_components[i]);
+		serialiser.add_separator();
+	}
+}
+
+void SWIFT::EC::ENTITY::deserialise(IO::DESERIALISER& deserialiser)
+{
+	size_t size;
+
+	deserialiser.deserialise(size);
+	for (size_t i = 0; i < size; ++i)
+	{
+		{
+			std::string name;
+			deserialiser.deserialise(name);
+			m_components.push_back(CATALOGUE::create_new(name));
+		}
+
+		deserialiser.deserialise(*m_components[i]);
+		deserialiser.next_separator();
+	}
+}

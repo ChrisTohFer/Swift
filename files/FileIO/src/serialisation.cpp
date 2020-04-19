@@ -21,10 +21,17 @@ void SWIFT::IO::SERIALISER::close()
 	stream.close();
 }
 
+void SWIFT::IO::SERIALISER::pad()
+{
+	stream << " ";
+}
+
 template<SWIFT::IO::TYPE type>
 void SWIFT::IO::SERIALISER::register_type()	//Provide a bit more context so we can detect errors when deserialising
 {
-	stream << std::int8_t(type);
+	pad();
+	stream << std::underlying_type<TYPE>::type(type);
+	pad();
 }
 
 void SWIFT::IO::SERIALISER::add_separator()
@@ -32,58 +39,83 @@ void SWIFT::IO::SERIALISER::add_separator()
 	register_type<TYPE::SEPARATOR>();
 }
 
-void SWIFT::IO::SERIALISER::serialize(const SERIALISABLE& object)
+void SWIFT::IO::SERIALISER::serialise(SERIALISABLE& object)
 {
 	register_type<TYPE::SERIALISABLE>();
 	object.serialise(*this);
 }
 
-void SWIFT::IO::SERIALISER::serialize(float val)
+void SWIFT::IO::SERIALISER::serialise(float val)
 {
 	register_type<TYPE::FLOAT>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(double val)
+void SWIFT::IO::SERIALISER::serialise(double val)
 {
 	register_type<TYPE::DOUBLE>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(bool val)
+void SWIFT::IO::SERIALISER::serialise(bool val)
 {
 	register_type<TYPE::BOOL>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(std::int8_t val)
+void SWIFT::IO::SERIALISER::serialise(std::int8_t val)
 {
 	register_type<TYPE::INT8>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(std::int16_t val)
+void SWIFT::IO::SERIALISER::serialise(std::int16_t val)
 {
 	register_type<TYPE::INT16>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(std::int32_t val)
+void SWIFT::IO::SERIALISER::serialise(std::int32_t val)
 {
 	register_type<TYPE::INT32>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(std::int64_t val)
+void SWIFT::IO::SERIALISER::serialise(std::int64_t val)
 {
 	register_type<TYPE::INT64>();
 	stream << val;
 }
 
-void SWIFT::IO::SERIALISER::serialize(const std::string& str)
+void SWIFT::IO::SERIALISER::serialise(std::uint8_t val)
+{
+	register_type<TYPE::UINT8>();
+	stream << val;
+}
+
+void SWIFT::IO::SERIALISER::serialise(std::uint16_t val)
+{
+	register_type<TYPE::UINT16>();
+	stream << val;
+}
+
+void SWIFT::IO::SERIALISER::serialise(std::uint32_t val)
+{
+	register_type<TYPE::UINT32>();
+	stream << val;
+}
+
+void SWIFT::IO::SERIALISER::serialise(std::uint64_t val)
+{
+	register_type<TYPE::UINT64>();
+	stream << val;
+}
+
+void SWIFT::IO::SERIALISER::serialise(const std::string& str)
 {
 	register_type<TYPE::STRING>();
 	stream << str.length();
+	pad();
 	stream << str;
 }
 
@@ -109,7 +141,7 @@ void SWIFT::IO::DESERIALISER::close()
 template<SWIFT::IO::TYPE type_required>
 bool SWIFT::IO::DESERIALISER::verify_type()	//Don't read data that is unexpected; we can always skip it later
 {
-	std::int8_t type(-1);
+	std::underlying_type<TYPE>::type type(-1);
 	auto pos = stream.tellg();
 
 	stream >> type;
@@ -126,7 +158,7 @@ bool SWIFT::IO::DESERIALISER::verify_type()	//Don't read data that is unexpected
 
 void SWIFT::IO::DESERIALISER::next_separator()
 {
-	std::int8_t type;
+	std::underlying_type<TYPE>::type type;
 	stream >> type;
 	while (TYPE(type) != TYPE::SEPARATOR)	//If type is separator, we can exit
 	{
@@ -162,6 +194,22 @@ void SWIFT::IO::DESERIALISER::next_separator()
 			std::int64_t i64;
 			stream >> i64;
 			break;
+		case TYPE::UINT8:
+			std::uint8_t ui8;
+			stream >> ui8;
+			break;
+		case TYPE::UINT16:
+			std::uint16_t ui16;
+			stream >> ui16;
+			break;
+		case TYPE::UINT32:
+			std::uint32_t ui32;
+			stream >> ui32;
+			break;
+		case TYPE::UINT64:
+			std::uint64_t ui64;
+			stream >> ui64;
+			break;
 		case TYPE::STRING:
 			size_t size;
 			stream >> size;
@@ -172,61 +220,87 @@ void SWIFT::IO::DESERIALISER::next_separator()
 	}
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(SERIALISABLE& object)
+void SWIFT::IO::DESERIALISER::deserialise(SERIALISABLE& object)
 {
 	if (verify_type<TYPE::SERIALISABLE>())
 		object.deserialise(*this);
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(float& ref)
+void SWIFT::IO::DESERIALISER::deserialise(float& ref)
 {
 	if (verify_type<TYPE::FLOAT>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(double& ref)
+void SWIFT::IO::DESERIALISER::deserialise(double& ref)
 {
 	if (verify_type<TYPE::DOUBLE>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(bool& ref)
+void SWIFT::IO::DESERIALISER::deserialise(bool& ref)
 {
 	if (verify_type<TYPE::BOOL>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int8_t& ref)
+void SWIFT::IO::DESERIALISER::deserialise(std::int8_t& ref)
 {
 	if (verify_type<TYPE::INT8>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int16_t& ref)
+void SWIFT::IO::DESERIALISER::deserialise(std::int16_t& ref)
 {
 	if (verify_type<TYPE::INT16>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int32_t& ref)
+void SWIFT::IO::DESERIALISER::deserialise(std::int32_t& ref)
 {
 	if (verify_type<TYPE::INT32>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::int64_t& ref)
+void SWIFT::IO::DESERIALISER::deserialise(std::int64_t& ref)
 {
 	if (verify_type<TYPE::INT64>())
 		stream >> ref;
 }
 
-void SWIFT::IO::DESERIALISER::deserialize(std::string& str)
+void SWIFT::IO::DESERIALISER::deserialise(std::uint8_t& ref)
+{
+	if (verify_type<TYPE::UINT8>())
+		stream >> ref;
+}
+
+void SWIFT::IO::DESERIALISER::deserialise(std::uint16_t& ref)
+{
+	if (verify_type<TYPE::UINT16>())
+		stream >> ref;
+}
+
+void SWIFT::IO::DESERIALISER::deserialise(std::uint32_t& ref)
+{
+	if (verify_type<TYPE::UINT32>())
+		stream >> ref;
+}
+
+void SWIFT::IO::DESERIALISER::deserialise(std::uint64_t& ref)
+{
+	if (verify_type<TYPE::UINT64>())
+		stream >> ref;
+}
+
+void SWIFT::IO::DESERIALISER::deserialise(std::string& str)
 {
 	if (verify_type<TYPE::STRING>())
 	{
 		size_t length;
 		stream >> length;
 		
+		stream.ignore(1); //ignore padded space
+
 		str.resize(length);
 		stream.read(&str[0], length);
 	}

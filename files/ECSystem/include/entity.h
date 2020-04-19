@@ -1,12 +1,12 @@
 #pragma once
 
+#include "component.h"
+#include "Types/include/id.h"
+#include "FileIO/include/serialisation.h"
+
 #include <vector>
 #include <memory>
 #include <type_traits>
-
-#include "Types/include/id.h"
-#include "component.h"
-
 
 namespace SWIFT::EC {
 
@@ -18,7 +18,7 @@ namespace SWIFT::EC {
 	using IS_COMPONENT_TYPE = std::enable_if_t<std::is_base_of<COMPONENT<COMPONENT_TYPE>, COMPONENT_TYPE>::value, int>;
 
 	//Entity base class
-	class ENTITY
+	class ENTITY : public IO::SERIALISABLE
 	{
 		std::vector<UNIQUE_COMPONENT> m_components;
 
@@ -38,6 +38,9 @@ namespace SWIFT::EC {
 
 		void add_component(const NAME_TYPE&);
 		void move_component(UNIQUE_COMPONENT&&);
+
+		virtual void serialise(IO::SERIALISER&) override;
+		virtual void deserialise(IO::DESERIALISER&) override;
 	};
 
 }

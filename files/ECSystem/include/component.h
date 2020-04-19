@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Types/include/id.h"
+#include "FileIO/include/serialisation.h"
 
 #include <type_traits>
 #include <memory>
 #include <map>
+#include <string>
 
 namespace SWIFT::EC
 {
@@ -12,7 +14,7 @@ namespace SWIFT::EC
 	class COMPONENT_BASE;
 	using COMPONENT_ID = ID<COMPONENT_BASE>;
 	using UNIQUE_COMPONENT = std::unique_ptr<COMPONENT_BASE>;
-	using NAME_TYPE = const char*;
+	using NAME_TYPE = std::string;
 
 	//Forward declarations
 	namespace CATALOGUE
@@ -20,8 +22,8 @@ namespace SWIFT::EC
 		void add_component(UNIQUE_COMPONENT);
 	}
 
-	//Base class for component, provides access to functions
-	class COMPONENT_BASE
+	//Base class for component, provides access to generic functions when the component type is not known
+	class COMPONENT_BASE : public IO::SERIALISABLE
 	{
 	protected:
 		const TYPE_ID type_id;
@@ -34,6 +36,10 @@ namespace SWIFT::EC
 		virtual UNIQUE_COMPONENT create_new() = 0;
 		virtual NAME_TYPE name() const = 0;
 		virtual void update() {};
+		
+		virtual IO::UNIQUE_SERIALISABLE make_serialisable() = 0;
+		virtual void serialise(IO::SERIALISER&) final;
+		virtual void deserialise(IO::DESERIALISER&) final;
 
 		bool is_type(TYPE_ID);
 	};
