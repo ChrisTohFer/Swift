@@ -1,4 +1,6 @@
+#include "GlobalHeaders/macros.h"
 #include "catalogue.h"
+
 #include <map>
 
 namespace {
@@ -12,6 +14,10 @@ namespace {
 
 void SWIFT::EC::CATALOGUE::add_component(UNIQUE_COMPONENT component)
 {
+	if (map().find(component->name()) != map().end())
+	{
+		CONSOLE_WARNING("Same name added to component catalogue twice, check that all names are unique!");	//TODO make this a popup/fatal error
+	}
 	map().emplace(component->name(), std::move(component));
 }
 
