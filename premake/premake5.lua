@@ -8,6 +8,9 @@ workspace "SwiftEngine"
 	
 	--Solution settings--
 	location(SOLUTION_PATH)
+	platforms {
+		"x64"
+	}
 	configurations {
 		"debug",
 		"release"
