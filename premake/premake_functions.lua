@@ -20,10 +20,13 @@ end
 --Move a file from source to destination; keeps track of which files are moved and won't repeat moves--
 local copied_files = {}
 function copy_file(source, destination)
+	source = source:gsub("/","\\")
+	destination = destination:gsub("/","\\")
+
 	local move_key = source..">"..destination
 	
 	if not table_contains(copied_files, move_key) then
-		os.execute("echo f | xcopy /y \""..source.."\" \""..destination.."\" > nul" )
+		os.execute("echo F | xcopy /y \""..source.."\" \""..destination.."\" > nul")
 		table.insert(copied_files, move_key)
 	end
 end

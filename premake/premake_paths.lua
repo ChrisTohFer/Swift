@@ -3,7 +3,7 @@
 ROOT_PATH			= path.getabsolute("..").."/"
 GENERATED_PATH		= ROOT_PATH.."generated_files/"
 FILES_PATH			= ROOT_PATH.."files/"
-THIRD_PARTY_PATH	= ROOT_PATH.."thirdparty/"
+THIRD_PARTY_PATH	= ROOT_PATH.."third_party/"
 OVERRIDE_PATH		= ROOT_PATH.."premake/overrides/"
 SOLUTION_PATH		= GENERATED_PATH
 PROJECT_PATH		= GENERATED_PATH.."vs_projects/"

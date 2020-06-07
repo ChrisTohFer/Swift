@@ -1,6 +1,7 @@
 --Define various global values and functions--
 dofile "premake_paths.lua"
 dofile "premake_functions.lua"
+dofile "premake_dependencies.lua"
 
 --Begin Solution--
 workspace "SwiftEngine"
