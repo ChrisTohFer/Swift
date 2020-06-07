@@ -186,11 +186,15 @@ void SWIFT::IO::DESERIALISER::deserialise(std::vector<T>& vec)
 	if (!verify_type<TYPE::VECTOR>())
 		return;
 
+
 	size_t size;
 	deserialise(size);
+
+	vec.clear();
+	vec.resize(size);
+	
 	for (auto i = 0u; i < size; ++i)
 	{
-		vec.push_back(T());
 		deserialise(vec[i]);
 	}
 }

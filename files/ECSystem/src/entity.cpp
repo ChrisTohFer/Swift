@@ -50,6 +50,8 @@ void SWIFT::EC::ENTITY::serialise(IO::SERIALISER& serialiser)
 
 void SWIFT::EC::ENTITY::deserialise(IO::DESERIALISER& deserialiser)
 {
+	_ASSERT(m_components.size() == 0);	//We don't want to read data into an entity that already has components
+
 	size_t size;
 
 	deserialiser.deserialise(size);
