@@ -8,21 +8,26 @@ workspace "SwiftEngine"
 	
 	--Solution settings--
 	location(SOLUTION_PATH)
-	platforms {
-		"x64"
-	}
+	language			"C++"
+	cppdialect			"C++17"
+	characterset		"Unicode"
+	
+	TARGETING_X64 = 	false;	--Affects dependencies
+	if TARGETING_X64 then
+		architecture "x86_64"
+	else
+		architecture "x86"
+	end
+	
 	configurations {
 		"debug",
 		"release"
 	}
-	cppdialect			"C++17"
-	
-	--Default project settings--
-	language			"C++"
-	characterset		"Unicode"
-	warnings			"Extra"
-	exceptionhandling	"Off"
-	stringpooling		"On"
+	filter "configurations:debug"
+		runtime		"Debug"
+	filter "configurations:release"
+		runtime		"Release"
+	filter{}
 	
 	--Preprocessor--
 	filter "configurations:debug"
@@ -36,10 +41,14 @@ workspace "SwiftEngine"
 	filter{}
 	
 	--Compiler--
+	warnings			"Extra"
+	stringpooling		"On"
+	exceptionhandling	"Off"
+	
 	filter "configurations:debug"
-		optimize "Off"
+		optimize 	"Off"
 	filter "configurations:release"
-		optimize "On"
+		optimize 	"On"
 	filter{}
 	
 	--Linker--
