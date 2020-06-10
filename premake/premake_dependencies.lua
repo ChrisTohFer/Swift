@@ -1,13 +1,21 @@
 --This file contains functions for importing third party or external projects--
 
 function import_sfml()
-	local sfml_folder = THIRD_PARTY_PATH.."SFML-2.5.1-windows-vc15-64-bit/SFML-2.5.1/"
+	local sfml_folder = THIRD_PARTY_PATH.."SFML-2.5.1/"
+	local sfml_bin_path = ""
+	
+	if TARGETING_X64 then
+		sfml_bin_path = sfml_folder.."x64/bin/"
+		libdirs(sfml_folder.."x64/lib")
+	else
+		sfml_bin_path = sfml_folder.."Win32/bin/"
+		libdirs(sfml_folder.."Win32/lib")
+	end
 	
 	--include folder
 	includedirs(sfml_folder.."include")
 	
-	--link .libs
-	libdirs(sfml_folder.."lib")
+	--link libs
 	
 	filter "configurations:debug"
 		links{
@@ -30,17 +38,17 @@ function import_sfml()
 	filter{}
 	
 	--copy dlls
-	copy_file(sfml_folder.."bin/openal32.dll", 			BINARY_PATH.."release/openal32.dll")
-	copy_file(sfml_folder.."bin/sfml-audio-2.dll", 		BINARY_PATH.."release/sfml-audio-2.dll")
-	copy_file(sfml_folder.."bin/sfml-graphics-2.dll", 	BINARY_PATH.."release/sfml-graphics-2.dll")
-	copy_file(sfml_folder.."bin/sfml-network-2.dll", 	BINARY_PATH.."release/sfml-network-2.dll")
-	copy_file(sfml_folder.."bin/sfml-system-2.dll", 	BINARY_PATH.."release/sfml-system-2.dll")
-	copy_file(sfml_folder.."bin/sfml-window-2.dll", 	BINARY_PATH.."release/sfml-window-2.dll")
+	copy_file(sfml_bin_path.."openal32.dll", 			BINARY_PATH.."release/openal32.dll")
+	copy_file(sfml_bin_path.."sfml-audio-2.dll", 		BINARY_PATH.."release/sfml-audio-2.dll")
+	copy_file(sfml_bin_path.."sfml-graphics-2.dll", 	BINARY_PATH.."release/sfml-graphics-2.dll")
+	copy_file(sfml_bin_path.."sfml-network-2.dll", 		BINARY_PATH.."release/sfml-network-2.dll")
+	copy_file(sfml_bin_path.."sfml-system-2.dll", 		BINARY_PATH.."release/sfml-system-2.dll")
+	copy_file(sfml_bin_path.."sfml-window-2.dll", 		BINARY_PATH.."release/sfml-window-2.dll")
 	
-	copy_file(sfml_folder.."bin/openal32.dll", 			BINARY_PATH.."debug/openal32.dll")
-	copy_file(sfml_folder.."bin/sfml-audio-d-2.dll", 	BINARY_PATH.."debug/sfml-audio-d-2.dll")
-	copy_file(sfml_folder.."bin/sfml-graphics-d-2.dll", BINARY_PATH.."debug/sfml-graphics-d-2.dll")
-	copy_file(sfml_folder.."bin/sfml-network-d-2.dll", 	BINARY_PATH.."debug/sfml-network-d-2.dll")
-	copy_file(sfml_folder.."bin/sfml-system-d-2.dll", 	BINARY_PATH.."debug/sfml-system-d-2.dll")
-	copy_file(sfml_folder.."bin/sfml-window-d-2.dll", 	BINARY_PATH.."debug/sfml-window-d-2.dll")
+	copy_file(sfml_bin_path.."openal32.dll", 			BINARY_PATH.."debug/openal32.dll")
+	copy_file(sfml_bin_path.."sfml-audio-d-2.dll", 		BINARY_PATH.."debug/sfml-audio-d-2.dll")
+	copy_file(sfml_bin_path.."sfml-graphics-d-2.dll", 	BINARY_PATH.."debug/sfml-graphics-d-2.dll")
+	copy_file(sfml_bin_path.."sfml-network-d-2.dll", 	BINARY_PATH.."debug/sfml-network-d-2.dll")
+	copy_file(sfml_bin_path.."sfml-system-d-2.dll", 	BINARY_PATH.."debug/sfml-system-d-2.dll")
+	copy_file(sfml_bin_path.."sfml-window-d-2.dll", 	BINARY_PATH.."debug/sfml-window-d-2.dll")
 end
