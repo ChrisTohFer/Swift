@@ -1,5 +1,10 @@
 --This file contains functions for importing third party or external projects--
 
+function include_sfml()
+	local sfml_folder = THIRD_PARTY_PATH.."SFML-2.5.1/"
+	includedirs(sfml_folder.."include")
+end
+
 function import_sfml()
 	local sfml_folder = THIRD_PARTY_PATH.."SFML-2.5.1/"
 	local sfml_bin_path = ""
@@ -13,7 +18,7 @@ function import_sfml()
 	end
 	
 	--include folder
-	includedirs(sfml_folder.."include")
+	include_sfml()
 	
 	--link libs
 	

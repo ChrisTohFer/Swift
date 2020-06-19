@@ -2,5 +2,8 @@
 import_projects{
 	"Types",
 	"FileIO",
-	"ECSystem"
+	"ECSystem",
+	"Multimedia"
 }
+
+import_sfml()
