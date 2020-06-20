@@ -8,14 +8,12 @@ namespace SWIFT
 		class IMPL;
 
 	public:
-		WINDOW();
-		WINDOW(const char*);
-		WINDOW(int, int, const char*);
+		WINDOW(const char* = "Title");
 		~WINDOW();
 
 		void title(const char*);
 		void create_window(int, int);
-		void create_fullscreen();
+		void create_fullscreen(int monitor_index = -1);
 		void close_window();
 
 		const char* title() const;

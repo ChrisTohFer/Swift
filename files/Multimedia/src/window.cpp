@@ -1,6 +1,46 @@
 #include "window.h"
+
 #include "SFML/Graphics.hpp"
+#include <Windows.h>
 #include <thread>
+
+#include <iostream>
+#include <vector>
+
+namespace
+{
+	BOOL CALLBACK Monitorenumproc(
+		HMONITOR monitor,
+		HDC,
+		LPRECT,
+		LPARAM vector
+	)
+	{
+		std::vector<MONITORINFO>& monitors = *reinterpret_cast<std::vector<MONITORINFO>*>(vector);
+		monitors.push_back(MONITORINFO());
+		monitors.back().cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(monitor, &monitors.back());
+		
+		return TRUE;
+	}
+
+	MONITORINFO monitor_info(int monitor_index)
+	{
+		std::vector<MONITORINFO> monitors;
+
+		EnumDisplayMonitors(
+			nullptr,
+			nullptr,
+			Monitorenumproc,
+			LPARAM(&monitors)
+		);
+
+		if (monitors.size() > monitor_index && monitor_index >= 0)
+			return monitors[monitor_index];
+		else
+			return monitors[0];
+	}
+}
 
 namespace SWIFT
 {
@@ -22,15 +62,25 @@ namespace SWIFT
 		};
 
 	public:
-		IMPL(sf::VideoMode const&, const char*, bool borderless = false);
+		struct PARAMS
+		{
+			const char* title = "Title";
+			sf::VideoMode videoMode = sf::VideoMode(100,100);
+			bool borderless = false;
+			int offsetX = 0;
+			int offsetY = 0;
+		};
+
+		IMPL(PARAMS const&);
 		~IMPL();
 
 		void title(const char*);
 		
 		bool is_open() const;
+		const HWND handle() const;
 
 	private:
-		void window_loop(sf::VideoMode const&, const char*, bool);
+		void window_loop(PARAMS const&);
 
 		sf::RenderWindow m_window;
 		std::thread m_windowThread;
@@ -41,20 +91,9 @@ namespace SWIFT
 
 // WINDOW //
 
-SWIFT::WINDOW::WINDOW()
-{
-}
-
 SWIFT::WINDOW::WINDOW(const char* titleArg)
 {
 	title(titleArg);
-	create_fullscreen();
-}
-
-SWIFT::WINDOW::WINDOW(int size_x, int size_y, const char* titleArg)
-{
-	title(titleArg);
-	create_window(size_x, size_y);
 }
 
 SWIFT::WINDOW::~WINDOW()
@@ -78,16 +117,37 @@ void SWIFT::WINDOW::create_window(int size_x, int size_y)
 		close_window();
 
 	auto video_mode = sf::VideoMode(size_x, size_y);
-	m_window = new IMPL(video_mode, m_title);
+	m_window = new IMPL({m_title, video_mode});
 }
 
-void SWIFT::WINDOW::create_fullscreen()
+void SWIFT::WINDOW::create_fullscreen(int monitor_index)
 {
+	//Find the monitor via windows
+	HMONITOR monitor;
+	MONITORINFO info;
+	if (m_window && monitor_index == -1)
+	{
+		monitor = MonitorFromWindow(m_window->handle(), MONITOR_DEFAULTTONEAREST);
+		info.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(monitor, &info);
+	}
+	else
+	{
+		info = monitor_info(monitor_index);
+	}
+
+	//Close old window
 	if (m_window)
 		close_window();
-	
-	auto video_mode = sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height);
-	m_window = new IMPL(video_mode, m_title, true);
+
+	//Set dimensions of new window
+	auto x = info.rcMonitor.left;
+	auto y = info.rcMonitor.top;
+	auto width = info.rcMonitor.right - info.rcMonitor.left;
+	auto height = info.rcMonitor.bottom - info.rcMonitor.top;
+
+	auto video_mode = sf::VideoMode(width, height);
+	m_window = new IMPL({ m_title, video_mode, true, x, y });
 }
 
 void SWIFT::WINDOW::close_window()
@@ -142,10 +202,10 @@ void SWIFT::WINDOW::IMPL::RENDERER::render_loop()
 
 // IMPL //
 
-SWIFT::WINDOW::IMPL::IMPL(sf::VideoMode const& video_mode, const char* titleArg, bool borderless)
+SWIFT::WINDOW::IMPL::IMPL(PARAMS const& params)
 	: m_renderer(*this)
 {
-	m_windowThread = std::thread(&IMPL::window_loop, this, video_mode, titleArg, borderless);
+	m_windowThread = std::thread(&IMPL::window_loop, this, params);
 }
 
 SWIFT::WINDOW::IMPL::~IMPL()
@@ -164,9 +224,18 @@ bool SWIFT::WINDOW::IMPL::is_open() const
 	return m_window.isOpen();
 }
 
-void SWIFT::WINDOW::IMPL::window_loop(sf::VideoMode const& video_mode, const char* titleArg, bool borderless)
+const HWND SWIFT::WINDOW::IMPL::handle() const
 {
-	m_window.create(video_mode, titleArg, borderless ? sf::Style::None : sf::Style::Default);
+	return m_window.getSystemHandle();
+}
+
+void SWIFT::WINDOW::IMPL::window_loop(PARAMS const& params)
+{
+	m_window.create(params.videoMode, params.title, params.borderless ? sf::Style::None : sf::Style::Default);
+	
+	//Only offset if we're in borderless fullscreen
+	if (params.borderless)
+		m_window.setPosition(sf::Vector2i(params.offsetX, params.offsetY));
 
 	m_window.setActive(false);	//We don't render on this thread
 	m_renderer.begin();
