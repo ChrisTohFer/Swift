@@ -51,7 +51,6 @@ project (project_name)
 		FILES_PATH,
 		project_files,
 		project_files.."src",
-		project_files.."include"
 	}
 	
 	--Config specific directories--

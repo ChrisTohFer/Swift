@@ -1,4 +1,4 @@
-#include "Multimedia/include/window.h"
+#include "Multimedia/window.h"
 
 #include <iostream>
 #include <string>
@@ -37,6 +37,10 @@ int main()
         {
             iss >> term;
             window.title(term.c_str());
+        }
+        else if (term == "check")
+        {
+            std::cout << (window.is_open() ? "Open" : "Closed") << "\n";
         }
     }
 

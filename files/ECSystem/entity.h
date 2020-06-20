@@ -1,8 +1,8 @@
 #pragma once
 
 #include "component.h"
-#include "Types/include/id.h"
-#include "FileIO/include/serialisation.h"
+#include "Types/id.h"
+#include "FileIO/serialisation.h"
 
 #include <vector>
 #include <memory>

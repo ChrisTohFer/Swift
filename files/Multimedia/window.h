@@ -19,6 +19,7 @@ namespace SWIFT
 		void close_window();
 
 		const char* title() const;
+		bool is_open() const;
 
 	private:
 		IMPL* m_window = nullptr;

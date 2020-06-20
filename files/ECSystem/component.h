@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Types/include/id.h"
-#include "FileIO/include/serialisation.h"
+#include "Types/id.h"
+#include "FileIO/serialisation.h"
 
 #include <type_traits>
 #include <memory>

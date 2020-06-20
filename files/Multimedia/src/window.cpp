@@ -6,18 +6,36 @@ namespace SWIFT
 {
 	class WINDOW::IMPL
 	{
+		class RENDERER
+		{
+		public:
+			RENDERER(IMPL& window);
+
+			void begin();
+			void wait_for_end();
+
+		private:
+			void render_loop();
+
+			IMPL& m_window_impl;
+			std::thread m_renderThread;
+		};
+
 	public:
 		IMPL(sf::VideoMode const&, const char*, bool borderless = false);
 		~IMPL();
 
 		void title(const char*);
+		
+		bool is_open() const;
 
 	private:
 		void window_loop(sf::VideoMode const&, const char*, bool);
 
 		sf::RenderWindow m_window;
-		std::thread m_thread;
+		std::thread m_windowThread;
 		bool m_running = true;
+		RENDERER m_renderer;
 	};
 }
 
@@ -83,16 +101,57 @@ const char* SWIFT::WINDOW::title() const
 	return m_title;
 }
 
+bool SWIFT::WINDOW::is_open() const
+{
+	return m_window && m_window->is_open();
+}
+
+// IMPL::RENDERER //
+
+SWIFT::WINDOW::IMPL::RENDERER::RENDERER(IMPL& window)
+	: m_window_impl(window)
+{}
+
+void SWIFT::WINDOW::IMPL::RENDERER::begin()
+{
+	m_renderThread = std::thread(&RENDERER::render_loop, this);
+}
+
+void SWIFT::WINDOW::IMPL::RENDERER::wait_for_end()
+{
+	m_renderThread.join();
+}
+
+void SWIFT::WINDOW::IMPL::RENDERER::render_loop()
+{
+	auto& window = m_window_impl.m_window;
+
+	while (m_window_impl.m_running)
+	{
+		window.clear(sf::Color::Black);
+		window.display();
+
+		{
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(1ms);
+		}
+	}
+
+	window.setActive(false);
+}
+
 // IMPL //
 
 SWIFT::WINDOW::IMPL::IMPL(sf::VideoMode const& video_mode, const char* titleArg, bool borderless)
-	: m_thread(&IMPL::window_loop, this, video_mode, titleArg, borderless)
-{}
+	: m_renderer(*this)
+{
+	m_windowThread = std::thread(&IMPL::window_loop, this, video_mode, titleArg, borderless);
+}
 
 SWIFT::WINDOW::IMPL::~IMPL()
 {
 	m_running = false;
-	m_thread.join();
+	m_windowThread.join();
 }
 
 void SWIFT::WINDOW::IMPL::title(const char* titleArg)
@@ -100,10 +159,18 @@ void SWIFT::WINDOW::IMPL::title(const char* titleArg)
 	m_window.setTitle(titleArg);
 }
 
+bool SWIFT::WINDOW::IMPL::is_open() const
+{
+	return m_window.isOpen();
+}
+
 void SWIFT::WINDOW::IMPL::window_loop(sf::VideoMode const& video_mode, const char* titleArg, bool borderless)
 {
 	m_window.create(video_mode, titleArg, borderless ? sf::Style::None : sf::Style::Default);
-	
+
+	m_window.setActive(false);	//We don't render on this thread
+	m_renderer.begin();
+
 	while (m_running)
 	{
 		sf::Event event;
@@ -116,16 +183,20 @@ void SWIFT::WINDOW::IMPL::window_loop(sf::VideoMode const& video_mode, const cha
 				m_running = false;
 				break;
 			case sf::Event::Resized:
-				auto visibleArea = sf::FloatRect(0, 0, event.size.width, event.size.height);
-				auto view = sf::View(visibleArea);
-				m_window.setView(view);
+				auto width = static_cast<float>(event.size.width);
+				auto height = static_cast<float>(event.size.height);
+
+				m_window.setView(sf::View(sf::FloatRect(0, 0, width, height)));
 				break;
 			}
 		}
 
-		m_window.clear(sf::Color::Black);
-		m_window.display();
+		{
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(1ms);
+		}
 	}
 
+	m_renderer.wait_for_end();
 	m_window.close();
 }
