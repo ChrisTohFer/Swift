@@ -182,13 +182,28 @@ void SWIFT::WINDOW::IMPL::RENDERER::wait_for_end()
 	m_renderThread.join();
 }
 
+#include <cmath>
+#include <chrono>
+
 void SWIFT::WINDOW::IMPL::RENDERER::render_loop()
 {
 	auto& window = m_window_impl.m_window;
 
+	sf::CircleShape circle;
+	circle.setFillColor(sf::Color::Green);
+	circle.setRadius(50.f);
+
+	auto start_time = std::chrono::system_clock::now();
 	while (m_window_impl.m_running)
 	{
+		auto now = std::chrono::system_clock::now();
+		auto time = now - start_time;
+		auto time_millis = std::chrono::duration_cast<std::chrono::milliseconds>(time);
+
+		circle.setRadius(50.f * abs(std::cos(time_millis.count() * 0.001f)));
+
 		window.clear(sf::Color::Black);
+		window.draw(circle);
 		window.display();
 
 		{
