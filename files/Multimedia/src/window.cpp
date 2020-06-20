@@ -35,7 +35,7 @@ namespace
 			LPARAM(&monitors)
 		);
 
-		if (monitors.size() > monitor_index && monitor_index >= 0)
+		if (monitor_index >= 0 && monitors.size() > size_t(monitor_index))
 			return monitors[monitor_index];
 		else
 			return monitors[0];
