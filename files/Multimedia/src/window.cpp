@@ -64,7 +64,7 @@ namespace SWIFT
 	public:
 		struct PARAMS
 		{
-			const char* title = "Title";
+			const wchar_t* title = L"Title";
 			sf::VideoMode videoMode = sf::VideoMode(100,100);
 			bool borderless = false;
 			int offsetX = 0;
@@ -74,7 +74,7 @@ namespace SWIFT
 		IMPL(PARAMS const&);
 		~IMPL();
 
-		void title(const char*);
+		void title(const wchar_t*);
 		
 		bool is_open() const;
 		const HWND handle() const;
@@ -91,7 +91,7 @@ namespace SWIFT
 
 // WINDOW //
 
-SWIFT::WINDOW::WINDOW(const char* titleArg)
+SWIFT::WINDOW::WINDOW(const wchar_t* titleArg)
 {
 	title(titleArg);
 }
@@ -101,7 +101,7 @@ SWIFT::WINDOW::~WINDOW()
 	close_window();
 }
 
-void SWIFT::WINDOW::title(const char* titleArg)
+void SWIFT::WINDOW::title(const wchar_t* titleArg)
 {
 	m_title = titleArg;
 
@@ -156,7 +156,7 @@ void SWIFT::WINDOW::close_window()
 	m_window = nullptr;
 }
 
-const char* SWIFT::WINDOW::title() const
+const wchar_t* SWIFT::WINDOW::title() const
 {
 	return m_title;
 }
@@ -229,7 +229,7 @@ SWIFT::WINDOW::IMPL::~IMPL()
 	m_windowThread.join();
 }
 
-void SWIFT::WINDOW::IMPL::title(const char* titleArg)
+void SWIFT::WINDOW::IMPL::title(const wchar_t* titleArg)
 {
 	m_window.setTitle(titleArg);
 }

@@ -8,20 +8,20 @@ namespace SWIFT
 		class IMPL;
 
 	public:
-		WINDOW(const char* = "Title");
+		WINDOW(const wchar_t* = L"Title");
 		~WINDOW();
 
-		void title(const char*);
+		void title(const wchar_t*);
 		void create_window(int, int);
 		void create_fullscreen(int monitor_index = -1);
 		void close_window();
 
-		const char* title() const;
+		const wchar_t* title() const;
 		bool is_open() const;
 
 	private:
 		IMPL* m_window = nullptr;
-		const char* m_title = "";
+		const wchar_t* m_title = L"";
 	};
 
 }

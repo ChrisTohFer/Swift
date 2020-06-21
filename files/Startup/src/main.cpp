@@ -7,46 +7,46 @@
 int main()
 {
     SWIFT::WINDOW window;
-    window.title("This is the title");
+    window.title(L"This is the title");
     window.create_window(200,200);
 
-    std::string input;
-    while (std::getline(std::cin, input))
+    std::wstring input;
+    while (std::getline(std::wcin, input))
     {
-        std::istringstream iss(input);
-        std::string term;
+        std::wistringstream iss(input);
+        std::wstring term;
 
         iss >> term;
 
-        if (term == "exit")
+        if (term == L"exit")
         {
             window.close_window();
             break;
         }
-        else if (term == "fullscreen")
+        else if (term == L"fullscreen")
         {
             window.create_fullscreen();
         }
-        else if (term == "fullscreenx")
+        else if (term == L"fullscreenx")
         {
             int i;
             iss >> i;
             window.create_fullscreen(i);
         }
-        else if (term == "window")
+        else if (term == L"window")
         {
             int width, height;
             iss >> width >> height;
             window.create_window(width, height);
         }
-        else if (term == "title")
+        else if (term == L"title")
         {
             iss >> term;
             window.title(term.c_str());
         }
-        else if (term == "check")
+        else if (term == L"check")
         {
-            std::cout << (window.is_open() ? "Open" : "Closed") << "\n";
+            std::wcout << (window.is_open() ? L"Open" : L"Closed") << "\n";
         }
     }
 
