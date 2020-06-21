@@ -27,12 +27,6 @@ int main()
         {
             window.create_fullscreen();
         }
-        else if (term == L"fullscreenx")
-        {
-            int i;
-            iss >> i;
-            window.create_fullscreen(i);
-        }
         else if (term == L"window")
         {
             int width, height;

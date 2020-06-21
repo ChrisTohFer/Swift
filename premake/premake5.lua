@@ -63,6 +63,7 @@ workspace "SwiftEngine"
 	--Projects--
 	group			"Core Projects"
 	generate_project("GlobalHeaders", "StaticLib")
+	generate_project("Platform", "StaticLib")
 	generate_project("Types", "StaticLib")
 	generate_project("FileIO", "StaticLib")
 	generate_project("ECSystem", "StaticLib")

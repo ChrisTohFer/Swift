@@ -13,7 +13,7 @@ namespace SWIFT
 
 		void title(const wchar_t*);
 		void create_window(int, int);
-		void create_fullscreen(int monitor_index = -1);
+		void create_fullscreen();
 		void close_window();
 
 		const wchar_t* title() const;

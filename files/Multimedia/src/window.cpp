@@ -1,46 +1,12 @@
 #include "window.h"
 
-#include "SFML/Graphics.hpp"
-#include <Windows.h>
-#include <thread>
+#include "Platform/devices.h"
 
+#include "SFML/Graphics.hpp"
+
+#include <thread>
 #include <iostream>
 #include <vector>
-
-namespace
-{
-	BOOL CALLBACK Monitorenumproc(
-		HMONITOR monitor,
-		HDC,
-		LPRECT,
-		LPARAM vector
-	)
-	{
-		std::vector<MONITORINFO>& monitors = *reinterpret_cast<std::vector<MONITORINFO>*>(vector);
-		monitors.push_back(MONITORINFO());
-		monitors.back().cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(monitor, &monitors.back());
-		
-		return TRUE;
-	}
-
-	MONITORINFO monitor_info(int monitor_index)
-	{
-		std::vector<MONITORINFO> monitors;
-
-		EnumDisplayMonitors(
-			nullptr,
-			nullptr,
-			Monitorenumproc,
-			LPARAM(&monitors)
-		);
-
-		if (monitor_index >= 0 && monitors.size() > size_t(monitor_index))
-			return monitors[monitor_index];
-		else
-			return monitors[0];
-	}
-}
 
 namespace SWIFT
 {
@@ -77,7 +43,7 @@ namespace SWIFT
 		void title(const wchar_t*);
 		
 		bool is_open() const;
-		const HWND handle() const;
+		const sf::WindowHandle handle() const;
 
 	private:
 		void window_loop(PARAMS const&);
@@ -120,34 +86,22 @@ void SWIFT::WINDOW::create_window(int size_x, int size_y)
 	m_window = new IMPL({m_title, video_mode});
 }
 
-void SWIFT::WINDOW::create_fullscreen(int monitor_index)
+void SWIFT::WINDOW::create_fullscreen()
 {
-	//Find the monitor via windows
-	HMONITOR monitor;
-	MONITORINFO info;
-	if (m_window && monitor_index == -1)
+	SWIFT::PLAT::MONITOR_DIMENSIONS dimensions;
+	
+	if (m_window)
 	{
-		monitor = MonitorFromWindow(m_window->handle(), MONITOR_DEFAULTTONEAREST);
-		info.cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(monitor, &info);
+		dimensions = SWIFT::PLAT::current_monitor_dimensions(m_window->handle());
+		close_window();
 	}
 	else
 	{
-		info = monitor_info(monitor_index);
+		dimensions = SWIFT::PLAT::main_monitor_dimensions();
 	}
 
-	//Close old window
-	if (m_window)
-		close_window();
-
-	//Set dimensions of new window
-	auto x = info.rcMonitor.left;
-	auto y = info.rcMonitor.top;
-	auto width = info.rcMonitor.right - info.rcMonitor.left;
-	auto height = info.rcMonitor.bottom - info.rcMonitor.top;
-
-	auto video_mode = sf::VideoMode(width, height);
-	m_window = new IMPL({ m_title, video_mode, true, x, y });
+	auto video_mode = sf::VideoMode(dimensions.width, dimensions.height);
+	m_window = new IMPL({ m_title, video_mode, true, dimensions.posX, dimensions.posY });
 }
 
 void SWIFT::WINDOW::close_window()
@@ -239,7 +193,7 @@ bool SWIFT::WINDOW::IMPL::is_open() const
 	return m_window.isOpen();
 }
 
-const HWND SWIFT::WINDOW::IMPL::handle() const
+const sf::WindowHandle SWIFT::WINDOW::IMPL::handle() const
 {
 	return m_window.getSystemHandle();
 }
