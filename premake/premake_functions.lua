@@ -53,6 +53,11 @@ project (project_name)
 		project_files.."src",
 	}
 	
+	vpaths{
+		["redist"] = project_files.."*.h",
+		["source"] = project_files.."src/**.*"
+	}
+	
 	--Config specific directories--
 	filter "configurations:debug"
 		objdir		(INTERMEDIATE_PATH.."debug/"..project_name)
