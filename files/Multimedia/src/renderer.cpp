@@ -15,7 +15,7 @@ private:
 	void render_loop();
 
 	std::thread       m_thread;
-	bool              m_running = false;
+	bool              m_running = true;
 	BACKEND_WINDOW&   m_window;
 };
 
