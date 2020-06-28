@@ -42,6 +42,8 @@ int main()
         {
             std::wcout << (window.is_open() ? L"Open" : L"Closed") << "\n";
         }
+
+        window.update();
     }
 
     return 0;
