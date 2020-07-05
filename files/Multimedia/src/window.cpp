@@ -173,6 +173,8 @@ void SWIFT::WINDOW::close_window()
 
 	delete m_window;
 	m_window = nullptr;
+
+	m_ready_to_close = false;
 }
 
 void SWIFT::WINDOW::update()
