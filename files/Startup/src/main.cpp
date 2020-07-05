@@ -16,11 +16,6 @@ static void stop_running()
     running() = false;
 }
 
-void wstring_test(std::wstring msg)
-{
-    std::wcout << msg << "\n";
-}
-
 int main()
 {
     SWIFT::CONSOLE console(std::wcin, std::wcout);
@@ -29,10 +24,9 @@ int main()
     window.title(L"This is the title");
     window.create_window(200, 200);
 
-    console.add_console_command(L"exit", L"", &stop_running);
-    console.add_console_command(L"fullscreen", L"", window, &SWIFT::WINDOW::create_fullscreen);
-    console.add_console_command(L"window", L"", window, &SWIFT::WINDOW::create_window);
-    console.add_console_command(L"wstringtest", L"", &wstring_test);
+    console.add_console_command(L"exit", L"Exit the application.", &stop_running);
+    console.add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
+    console.add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
 
     std::wstring input;
     while (running())

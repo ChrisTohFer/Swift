@@ -102,6 +102,7 @@ namespace SWIFT
     private:
         void console_loop();
         void check_input();
+        void output_command_map();
 
         std::thread             m_thread;
         std::mutex              m_mutex;

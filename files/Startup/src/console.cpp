@@ -1,6 +1,7 @@
 #include "console.h"
 
 #include <sstream>
+#include <iomanip>
 
 SWIFT::CONSOLE::CONSOLE(std::wistream& istream, std::wostream& ostream)
     : m_istream(istream), m_ostream(ostream)
@@ -40,11 +41,15 @@ void SWIFT::CONSOLE::invoke_commands()
 
 void SWIFT::CONSOLE::output(std::wstring const& msg)
 {
+    m_mutex.lock();
     m_ostream << msg;
+    m_mutex.unlock();
 }
 
 void SWIFT::CONSOLE::console_loop()
 {
+    add_console_command(L"help", L"Bring up the full list of console commands.", *this, &CONSOLE::output_command_map);
+
     while (m_running)
     {
         check_input();
@@ -80,4 +85,12 @@ void SWIFT::CONSOLE::check_input()
     }
 
     m_mutex.unlock();
+}
+
+void SWIFT::CONSOLE::output_command_map()
+{
+    for (auto& command : m_command_definitions)
+    {
+        m_ostream << std::left << std::setw(28) << command.first << "- " << command.second->description << "\n";
+    }
 }
