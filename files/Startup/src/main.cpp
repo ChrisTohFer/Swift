@@ -4,46 +4,44 @@
 #include <string>
 #include <sstream>
 
+#include "console.h"
+
+static bool& running()
+{
+    static bool r = true;
+    return r;
+}
+static void stop_running()
+{
+    running() = false;
+}
+
+void wstring_test(std::wstring msg)
+{
+    std::wcout << msg << "\n";
+}
+
 int main()
 {
+    SWIFT::CONSOLE console(std::wcin, std::wcout);
+
     SWIFT::WINDOW window;
     window.title(L"This is the title");
-    window.create_window(200,200);
+    window.create_window(200, 200);
+
+    console.add_console_command(L"exit", L"", &stop_running);
+    console.add_console_command(L"fullscreen", L"", window, &SWIFT::WINDOW::create_fullscreen);
+    console.add_console_command(L"window", L"", window, &SWIFT::WINDOW::create_window);
+    console.add_console_command(L"wstringtest", L"", &wstring_test);
 
     std::wstring input;
-    while (std::getline(std::wcin, input))
+    while (running())
     {
-        std::wistringstream iss(input);
-        std::wstring term;
-
-        iss >> term;
-
-        if (term == L"exit")
-        {
-            window.close_window();
-            break;
-        }
-        else if (term == L"fullscreen")
-        {
-            window.create_fullscreen();
-        }
-        else if (term == L"window")
-        {
-            int width, height;
-            iss >> width >> height;
-            window.create_window(width, height);
-        }
-        else if (term == L"title")
-        {
-            iss >> term;
-            window.title(term.c_str());
-        }
-        else if (term == L"check")
-        {
-            std::wcout << (window.is_open() ? L"Open" : L"Closed") << "\n";
-        }
-
+        console.invoke_commands();
         window.update();
+
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1ms);
     }
 
     return 0;

@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-SWIFT::CONSOLE::CONSOLE(std::istream& istream, std::ostream& ostream)
+SWIFT::CONSOLE::CONSOLE(std::wistream& istream, std::wostream& ostream)
     : m_istream(istream), m_ostream(ostream)
 {
     m_thread = std::thread(&CONSOLE::console_loop, this);
@@ -14,7 +14,7 @@ SWIFT::CONSOLE::~CONSOLE()
     //m_thread.join(); We don't join here as the thread may be waiting for cin, just allow the thread to terminate forcefully
 }
 
-void SWIFT::CONSOLE::remove_console_command(std::string command)
+void SWIFT::CONSOLE::remove_console_command(std::wstring command)
 {
     m_mutex.lock();
 
@@ -38,7 +38,7 @@ void SWIFT::CONSOLE::invoke_commands()
     m_mutex.unlock();
 }
 
-void SWIFT::CONSOLE::output(std::string const& msg)
+void SWIFT::CONSOLE::output(std::wstring const& msg)
 {
     m_ostream << msg;
 }
@@ -58,13 +58,12 @@ void SWIFT::CONSOLE::check_input()
 {
     m_istream.peek();   //I don't know why, but nothing can be entered to the console if we dont do this
 
-    char buffer[256];
-    if(m_istream.readsome(buffer, sizeof(buffer)) == 0)
-        return;
+    std::wstring command_line;
+    std::getline(m_istream, command_line);
 
-    std::istringstream command_stream(buffer);
+    std::wistringstream command_stream(command_line);
 
-    std::string command;
+    std::wstring command;
     command_stream >> command;
 
     //Parse command and add to vector
