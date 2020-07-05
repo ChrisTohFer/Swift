@@ -11,7 +11,7 @@ SWIFT::CONSOLE::CONSOLE(std::istream& istream, std::ostream& ostream)
 SWIFT::CONSOLE::~CONSOLE()
 {
     m_running = false;
-    m_thread.join();
+    //m_thread.join(); We don't join here as the thread may be waiting for cin, just allow the thread to terminate forcefully
 }
 
 void SWIFT::CONSOLE::remove_console_command(std::string command)
@@ -40,22 +40,14 @@ void SWIFT::CONSOLE::invoke_commands()
 
 void SWIFT::CONSOLE::output(std::string const& msg)
 {
-    m_mutex.lock();
-
     m_ostream << msg;
-
-    m_mutex.unlock();
 }
 
 void SWIFT::CONSOLE::console_loop()
 {
     while (m_running)
     {
-        m_mutex.lock();
-
         check_input();
-
-        m_mutex.unlock();
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
@@ -69,8 +61,6 @@ void SWIFT::CONSOLE::check_input()
     char buffer[256];
     if(m_istream.readsome(buffer, sizeof(buffer)) == 0)
         return;
-    //m_istream.ignore(std::numeric_limits<std::streamsize>::max());
-    //m_istream.clear();
 
     std::istringstream command_stream(buffer);
 
@@ -78,6 +68,8 @@ void SWIFT::CONSOLE::check_input()
     command_stream >> command;
 
     //Parse command and add to vector
+    m_mutex.lock();
+
     auto command_itr = m_command_definitions.find(command);
     if (command_itr == m_command_definitions.end())
     {
@@ -87,4 +79,6 @@ void SWIFT::CONSOLE::check_input()
     {
         m_ostream << "Incorrect arguments supplied.\n";
     }
+
+    m_mutex.unlock();
 }
