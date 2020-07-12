@@ -1,6 +1,7 @@
 #pragma once
 
 #include "renderer.h"
+#include "input.h"
 
 namespace SWIFT
 {
@@ -16,7 +17,7 @@ namespace SWIFT
 		void create_window(int, int);
 		void create_fullscreen();
 		void close_window();
-		void update();
+		void update(INPUT&);
 
 		const wchar_t* title() const;
 		bool is_open() const;
@@ -24,10 +25,11 @@ namespace SWIFT
 	private:
 		void create_impl(const wchar_t*, bool, int, int, int, int);
 
-		IMPL*          m_window = nullptr;
-		const wchar_t* m_title = L"";
-		RENDERER       m_renderer;
-		bool		   m_ready_to_close = false;
+		RENDERER			  m_renderer;
+		KEY_ARRAY<KEY_UPDATE> m_key_updates;
+		IMPL*                 m_window = nullptr;
+		const wchar_t*        m_title = L"";
+		bool		          m_ready_to_close = false;
 	};
 
 }

@@ -6,8 +6,17 @@
 #include "SFML/Graphics.hpp"
 
 #include <thread>
+#include <mutex>
 #include <iostream>
 #include <vector>
+
+namespace
+{
+	SWIFT::KEY convert_key(sf::Keyboard::Key key)
+	{
+		return SWIFT::KEY(static_cast<int>(key));
+	}
+}
 
 namespace SWIFT
 {
@@ -23,6 +32,9 @@ namespace SWIFT
 		const sf::WindowHandle handle() const;
 		BACKEND_WINDOW& window();
 
+		void lock_input_mutex();
+		void unlock_input_mutex();
+
 	private:
 		void wait_for_initialization() const;
 		void window_loop(const wchar_t*, bool, int, int, int, int);
@@ -30,6 +42,7 @@ namespace SWIFT
 		WINDOW&	         m_parent;
 		BACKEND_WINDOW   m_window;
 		std::thread      m_thread;
+		std::mutex       m_input_mutex;
 		bool             m_running = false;
 	};
 }
@@ -69,6 +82,16 @@ SWIFT::BACKEND_WINDOW& SWIFT::WINDOW::IMPL::window()
 	return m_window;
 }
 
+void SWIFT::WINDOW::IMPL::lock_input_mutex()
+{
+	m_input_mutex.lock();
+}
+
+void SWIFT::WINDOW::IMPL::unlock_input_mutex()
+{
+	m_input_mutex.unlock();
+}
+
 void SWIFT::WINDOW::IMPL::wait_for_initialization() const
 {
 	using namespace std::chrono_literals;
@@ -100,10 +123,42 @@ void SWIFT::WINDOW::IMPL::window_loop(const wchar_t* title, bool borderless, int
 				m_parent.m_ready_to_close = true;
 				break;
 			case sf::Event::Resized:
-				auto newWidth = static_cast<float>(event.size.width);
-				auto newHeight = static_cast<float>(event.size.height);
+				{
+					auto newWidth = static_cast<float>(event.size.width);
+					auto newHeight = static_cast<float>(event.size.height);
 
-				m_window.setView(sf::View(sf::FloatRect(0, 0, newWidth, newHeight)));
+					m_window.setView(sf::View(sf::FloatRect(0, 0, newWidth, newHeight)));
+				}
+				break;
+			case sf::Event::KeyPressed:
+				m_input_mutex.lock();
+				
+				{
+					auto key = convert_key(event.key.code);
+					auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
+
+					key_update.changed_since_last_frame = !key_update.held;
+					key_update.held = true;
+					key_update.alt = event.key.alt;
+					key_update.control = event.key.control;
+					key_update.shift = event.key.shift;
+					key_update.system = event.key.system;
+				}
+
+				m_input_mutex.unlock();
+				break;
+			case sf::Event::KeyReleased:
+				m_input_mutex.lock();
+				
+				{
+					auto key = convert_key(event.key.code);
+					auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
+
+					key_update.changed_since_last_frame = key_update.held;
+					key_update.held = false;
+				}
+
+				m_input_mutex.unlock();
 				break;
 			}
 		}
@@ -177,8 +232,15 @@ void SWIFT::WINDOW::close_window()
 	m_ready_to_close = false;
 }
 
-void SWIFT::WINDOW::update()
+void SWIFT::WINDOW::update(INPUT& input)
 {
+	if (m_window)
+	{
+		m_window->lock_input_mutex();
+		input.update(m_key_updates);
+		m_window->unlock_input_mutex();
+	}
+
 	if (m_ready_to_close)
 		close_window();
 }
