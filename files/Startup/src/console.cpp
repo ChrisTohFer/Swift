@@ -62,6 +62,11 @@ void SWIFT::CONSOLE::check_input()
     std::wstring command_line;
     std::getline(m_istream, command_line);  //We block here while waiting for input - make sure we haven't locked the mutex at this point
 
+    if (command_line == L"")
+    {
+        return;
+    }
+
     std::wistringstream command_stream(command_line);
     std::wstring command;
     command_stream >> command;
