@@ -29,6 +29,11 @@ namespace SWIFT
             m_previous_time = time;
         }
 
+        void skip()
+        {
+            m_previous_time = std::chrono::system_clock::now();
+        }
+
         int average_cycle_time()
         {
             int total = 0;
