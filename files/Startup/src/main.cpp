@@ -54,15 +54,14 @@ int main()
     console.add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
     console.add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
 
-    SWIFT::INPUT input_manager;
     LISTENER listener(console);
-    input_manager.listen_for_keys(listener);
+    window.input().listen_for_keys(listener);
 
     std::wstring input;
     while (running())
     {
         console.invoke_commands();
-        window.update(input_manager);
+        window.update();
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);

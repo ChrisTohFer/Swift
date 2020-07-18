@@ -232,12 +232,12 @@ void SWIFT::WINDOW::close_window()
 	m_ready_to_close = false;
 }
 
-void SWIFT::WINDOW::update(INPUT& input)
+void SWIFT::WINDOW::update()
 {
 	if (m_window)
 	{
 		m_window->lock_input_mutex();
-		input.update(m_key_updates);
+		m_input.update(m_key_updates);
 		m_window->unlock_input_mutex();
 	}
 
@@ -253,6 +253,11 @@ const wchar_t* SWIFT::WINDOW::title() const
 bool SWIFT::WINDOW::is_open() const
 {
 	return m_window && m_window->is_open();
+}
+
+SWIFT::INPUT& SWIFT::WINDOW::input() 
+{
+	return m_input;
 }
 
 void SWIFT::WINDOW::create_impl(const wchar_t* title, bool borderless, int x, int y, int width, int height)
