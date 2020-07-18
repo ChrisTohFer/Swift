@@ -43,6 +43,29 @@ private:
     SWIFT::CONSOLE& m_console;
 };
 
+class LISTENER2 : public SWIFT::INPUT::MOUSE_LISTENER
+{
+public:
+    LISTENER2(SWIFT::CONSOLE& console)
+        : m_console(console)
+    {}
+    virtual void notify(SWIFT::MOUSE_EVENT event)
+    {
+        auto str = std::to_wstring((int)event.button);
+        str += L", ";
+        str += std::to_wstring(event.posX);
+        str += L", ";
+        str += std::to_wstring(event.posY);
+        str += L", ";
+        str += event.pressed ? L"Pressed" : L"Released";
+
+        m_console.output(str);
+        m_console.output(L"\n");
+    }
+private:
+    SWIFT::CONSOLE& m_console;
+};
+
 int main()
 {
     SWIFT::CONSOLE console(std::wcin, std::wcout);
@@ -55,7 +78,9 @@ int main()
     console.add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
 
     LISTENER listener(console);
+    LISTENER2 listener2(console);
     window.input().listen_for_keys(listener);
+    window.input().listen_for_mouse(listener2);
 
     std::wstring input;
     while (running())

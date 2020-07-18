@@ -16,6 +16,11 @@ namespace
 	{
 		return SWIFT::KEY(static_cast<int>(key));
 	}
+	
+	SWIFT::MOUSE_BUTTON convert_button(sf::Mouse::Button button)
+	{
+		return SWIFT::MOUSE_BUTTON(button);
+	}
 }
 
 namespace SWIFT
@@ -39,6 +44,19 @@ namespace SWIFT
 		void wait_for_initialization() const;
 		void window_loop(const wchar_t*, bool, int, int, int, int);
 		 
+		void handle_closed();
+		void handle_resized(sf::Event const&);
+
+		void handle_key_pressed(sf::Event const&);
+		void handle_key_released(sf::Event const&);
+
+		void handle_mouse_button_pressed(sf::Event const&);
+		void handle_mouse_button_released(sf::Event const&);
+		void handle_mouse_wheel_scrolled(sf::Event const&);
+		void handle_mouse_moved(sf::Event const&);
+		void handle_mouse_entered();
+		void handle_mouse_left();
+
 		WINDOW&	         m_parent;
 		BACKEND_WINDOW   m_window;
 		std::thread      m_thread;
@@ -120,45 +138,34 @@ void SWIFT::WINDOW::IMPL::window_loop(const wchar_t* title, bool borderless, int
 			switch (event.type)
 			{
 			case sf::Event::Closed:
-				m_parent.m_ready_to_close = true;
+				handle_closed();
 				break;
 			case sf::Event::Resized:
-				{
-					auto newWidth = static_cast<float>(event.size.width);
-					auto newHeight = static_cast<float>(event.size.height);
-
-					m_window.setView(sf::View(sf::FloatRect(0, 0, newWidth, newHeight)));
-				}
+				handle_resized(event);
 				break;
 			case sf::Event::KeyPressed:
-				m_input_mutex.lock();
-				
-				{
-					auto key = convert_key(event.key.code);
-					auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
-
-					key_update.changed_since_last_frame = !key_update.held;
-					key_update.held = true;
-					key_update.alt = event.key.alt;
-					key_update.control = event.key.control;
-					key_update.shift = event.key.shift;
-					key_update.system = event.key.system;
-				}
-
-				m_input_mutex.unlock();
+				handle_key_pressed(event);
 				break;
 			case sf::Event::KeyReleased:
-				m_input_mutex.lock();
-				
-				{
-					auto key = convert_key(event.key.code);
-					auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
-
-					key_update.changed_since_last_frame = key_update.held;
-					key_update.held = false;
-				}
-
-				m_input_mutex.unlock();
+				handle_key_released(event);
+				break;
+			case sf::Event::MouseButtonPressed:
+				handle_mouse_button_pressed(event);
+				break;
+			case sf::Event::MouseButtonReleased:
+				handle_mouse_button_released(event);
+				break;
+			case sf::Event::MouseWheelScrolled:
+				handle_mouse_wheel_scrolled(event);
+				break;
+			case sf::Event::MouseMoved:
+				handle_mouse_moved(event);
+				break;
+			case sf::Event::MouseEntered:
+				handle_mouse_entered();
+				break;
+			case sf::Event::MouseLeft:
+				handle_mouse_left();
 				break;
 			}
 		}
@@ -171,6 +178,118 @@ void SWIFT::WINDOW::IMPL::window_loop(const wchar_t* title, bool borderless, int
 
 	m_running = false;
 	m_window.close();
+}
+
+void SWIFT::WINDOW::IMPL::handle_closed()
+{
+	m_parent.m_ready_to_close = true;
+}
+
+void SWIFT::WINDOW::IMPL::handle_resized(sf::Event const& event)
+{
+	auto newWidth = static_cast<float>(event.size.width);
+	auto newHeight = static_cast<float>(event.size.height);
+
+	m_window.setView(sf::View(sf::FloatRect(0, 0, newWidth, newHeight)));
+}
+
+void SWIFT::WINDOW::IMPL::handle_key_pressed(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	auto key = convert_key(event.key.code);
+	auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
+
+	key_update.changed_since_last_frame = !key_update.held;
+	key_update.held = true;
+	key_update.alt = event.key.alt;
+	key_update.control = event.key.control;
+	key_update.shift = event.key.shift;
+	key_update.system = event.key.system;
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_key_released(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	auto key = convert_key(event.key.code);
+	auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
+
+	key_update.changed_since_last_frame = key_update.held;
+	key_update.held = false;
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_button_pressed(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.events.push_back(
+		{
+			convert_button(event.mouseButton.button),
+			event.mouseButton.x,
+			event.mouseButton.y,
+			true
+		}
+	);
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_button_released(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.events.push_back(
+		{
+			convert_button(event.mouseButton.button),
+			event.mouseButton.x,
+			event.mouseButton.y,
+			false
+		}
+	);
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_wheel_scrolled(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.wheelScroll += event.mouseWheelScroll.y;
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_moved(sf::Event const& event)
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.posX = event.mouseMove.x;
+	m_parent.m_mouse_updates.posY = event.mouseMove.y;
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_entered()
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.in_window = true;
+
+	m_input_mutex.unlock();
+}
+
+void SWIFT::WINDOW::IMPL::handle_mouse_left()
+{
+	m_input_mutex.lock();
+
+	m_parent.m_mouse_updates.in_window = false;
+
+	m_input_mutex.unlock();
 }
 
 // WINDOW //
@@ -237,7 +356,7 @@ void SWIFT::WINDOW::update()
 	if (m_window)
 	{
 		m_window->lock_input_mutex();
-		m_input.update(m_key_updates);
+		m_input.update(m_mouse_updates, m_key_updates);
 		m_window->unlock_input_mutex();
 	}
 

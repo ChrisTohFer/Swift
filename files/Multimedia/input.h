@@ -3,6 +3,7 @@
 #include "Types/event.h"
 
 #include <array>
+#include <vector>
 
 namespace SWIFT
 {
@@ -115,9 +116,24 @@ namespace SWIFT
         KeyCount     ///< Keep last -- the total number of keyboard keys
     };
 
+    const inline size_t KEY_COUNT = static_cast<int>(KEY::KeyCount);
+
+    enum class MOUSE_BUTTON
+    {
+        LEFT,
+        RIGHT,
+        MIDDLE,
+        BACK,
+        FORWARD,
+
+        COUNT
+    };
+
+    const inline size_t MOUSE_BUTTON_COUNT = static_cast<int>(MOUSE_BUTTON::COUNT);
+
     //Convenient way to create arrays with an element for each key
     template<typename KEY_TYPE>
-    using KEY_ARRAY = std::array<KEY_TYPE, static_cast<int>(KEY::KeyCount)>;
+    using KEY_ARRAY = std::array<KEY_TYPE, KEY_COUNT>;
 
     //Contains update information for a specific key
     struct KEY_UPDATE
@@ -129,6 +145,24 @@ namespace SWIFT
 
         bool   held                     = false;
         bool   changed_since_last_frame = false;    //This is to catch when a key is pressed and released on a single frame (mostly in case the game chugs)
+    };
+
+    struct MOUSE_EVENT
+    {
+        MOUSE_BUTTON button;
+        int posX;
+        int posY;
+        bool pressed;   //Pressed or released
+    };
+
+    struct MOUSE_UPDATE
+    {
+        bool   in_window = false;
+        int    posX;
+        int    posY;
+        int    wheelScroll;
+
+        std::vector<MOUSE_EVENT> events;
     };
 
     class INPUT
@@ -147,12 +181,19 @@ namespace SWIFT
             bool   released = false;
         };
 
-        using KEY_LISTENER = EVENT<KEY, KEY_STATUS const&>::LISTENER;
+        struct MOUSE_STATE
+        {
+            bool   in_window   = false;
+            int    posX        = 0;
+            int    posY        = 0;
+            int    wheelScroll = 0;
+        };
 
-        const size_t KEY_COUNT = static_cast<size_t>(KEY::KeyCount);
+        using KEY_LISTENER   = EVENT<KEY, KEY_STATUS const&>::LISTENER;
+        using MOUSE_LISTENER = EVENT<MOUSE_EVENT>::LISTENER;
 
         //Call once per main loop cycle, update status of all keys
-        void update(KEY_ARRAY<KEY_UPDATE>&);
+        void update(MOUSE_UPDATE&, KEY_ARRAY<KEY_UPDATE>&);
 
         //Methods to check key status
         //Single key presses are distinguished from ctrl + key or shift + key etc with boolean flags
@@ -162,9 +203,14 @@ namespace SWIFT
 
         void listen_for_keys(KEY_LISTENER&);
         void stop_listening_for_keys(KEY_LISTENER&);
+        void listen_for_mouse(MOUSE_LISTENER&);
+        void stop_listening_for_mouse(MOUSE_LISTENER&);
 
     private:
-        KEY_ARRAY<KEY_STATUS>          m_key_status;
-        EVENT<KEY, KEY_STATUS const&>  m_key_event;
+        MOUSE_STATE                       m_mouse_state;
+        EVENT<MOUSE_EVENT>                m_mouse_event;
+
+        KEY_ARRAY<KEY_STATUS>             m_key_status;
+        EVENT<KEY, KEY_STATUS const&>     m_key_event;
     };
 }
