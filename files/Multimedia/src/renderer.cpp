@@ -4,8 +4,10 @@
 #include "GlobalHeaders/timing.h"
 
 #include "SFML/Graphics.hpp"
+#include "SFML/Graphics/Font.hpp"
 
 #include <thread>
+#include <mutex>
 
 class SWIFT::RENDERER::IMPL
 {
@@ -13,12 +15,16 @@ public:
 	IMPL(BACKEND_WINDOW& window);
 	~IMPL();
 
+	void update_scene(RENDER_SCENE const&);
+
 private:
 	void render_loop();
 
 	std::thread       m_thread;
+	std::mutex        m_mutex;
 	bool              m_running = true;
 	BACKEND_WINDOW&   m_window;
+	RENDER_SCENE	  m_scene;
 };
 
 // RENDERER::IMPL //
@@ -35,22 +41,22 @@ SWIFT::RENDERER::IMPL::~IMPL()
 	m_thread.join();
 }
 
-#include <cmath>
-#include <chrono>
-#include "SFML/Graphics/Font.hpp"
+void SWIFT::RENDERER::IMPL::update_scene(RENDER_SCENE const& scene)
+{
+	m_mutex.lock();
+	m_scene = scene;
+	m_mutex.unlock();
+}
+
 void SWIFT::RENDERER::IMPL::render_loop()
 {
 	//temporary
 	sf::Font font;
 	font.loadFromFile("../../resources/fonts/arial.ttf");
 	sf::Text cycle_time_text;
-	sf::CircleShape circle;
 	cycle_time_text.setFont(font);
 	cycle_time_text.setFillColor(sf::Color::White);
 	cycle_time_text.setCharacterSize(20);
-	circle.setFillColor(sf::Color::Green);
-	circle.setRadius(50.f);
-	auto start_time = std::chrono::system_clock::now();
 	//~temporary
 
 	CYCLE_TIMER timer(100);
@@ -62,18 +68,23 @@ void SWIFT::RENDERER::IMPL::render_loop()
 		auto temp = std::to_string(timer.average_cycle_time());
 		cycle_time_text.setString(temp);
 		auto now = std::chrono::system_clock::now();
-		auto time = now - start_time;
-		auto time_millis = std::chrono::duration_cast<std::chrono::milliseconds>(time);
-		circle.setRadius(50.f * abs(std::cos(time_millis.count() * 0.001f)));
 		//~temporary
 
 		m_window.clear(sf::Color::Black);
-		m_window.draw(circle);
+		{
+			m_mutex.lock();
+			m_scene.draw(m_window);	//Scene is protected by mutex as it is provided by main thread
+			m_mutex.unlock();
+		}
 		m_window.draw(cycle_time_text);
 		m_window.display();
 
-		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(1ms);
+		//If we've drawn the scene already then wait
+		while (m_running && m_scene.drawn())
+		{
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(1ms);
+		}
 	}
 
 	m_window.setActive(false);
@@ -95,6 +106,12 @@ void SWIFT::RENDERER::stop()
 {
 	delete m_impl;
 	m_impl = nullptr;
+}
+
+void SWIFT::RENDERER::update_scene(RENDER_SCENE const& scene)
+{
+	if(m_impl)
+		m_impl->update_scene(scene);
 }
 
 

@@ -17,7 +17,7 @@ namespace SWIFT
 		void create_window(int, int);
 		void create_fullscreen();
 		void close_window();
-		void update();
+		void update(RENDER_SCENE const&);
 
 		const wchar_t* title() const;
 		bool is_open() const;

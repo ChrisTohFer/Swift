@@ -351,8 +351,10 @@ void SWIFT::WINDOW::close_window()
 	m_ready_to_close = false;
 }
 
-void SWIFT::WINDOW::update()
+void SWIFT::WINDOW::update(RENDER_SCENE const& scene)
 {
+	m_renderer.update_scene(scene);
+
 	if (m_window)
 	{
 		m_window->lock_input_mutex();

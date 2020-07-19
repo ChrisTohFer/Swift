@@ -66,6 +66,38 @@ private:
     SWIFT::CONSOLE& m_console;
 };
 
+class RECT_LISTENER : public SWIFT::INPUT::MOUSE_LISTENER
+{
+public:
+    RECT_LISTENER(SWIFT::RENDER_SCENE& scene)
+        : m_scene(scene)
+    {}
+
+    virtual void notify(SWIFT::MOUSE_EVENT event)
+    {
+        if (event.button != SWIFT::MOUSE_BUTTON::LEFT)
+            return;
+
+        if(event.pressed)
+        { 
+            m_held = true;
+            m_pos1 = SWIFT::VECTOR2F(event.posX, event.posY);
+        }
+
+        if (!event.pressed && m_held)
+        {
+            m_held = false;
+            SWIFT::RECT rect(m_pos1, SWIFT::VECTOR2F(event.posX, event.posY) - m_pos1);
+            m_scene.addRectangle(rect);
+        }
+    }
+
+private:
+    SWIFT::RENDER_SCENE& m_scene;
+    SWIFT::VECTOR2F m_pos1;
+    bool m_held;
+};
+
 int main()
 {
     SWIFT::CONSOLE console(std::wcin, std::wcout);
@@ -82,11 +114,16 @@ int main()
     window.input().listen_for_keys(listener);
     window.input().listen_for_mouse(listener2);
 
+    SWIFT::RENDER_SCENE scene;
+
+    RECT_LISTENER rl(scene);
+    window.input().listen_for_mouse(rl);
+
     std::wstring input;
     while (running())
     {
         console.invoke_commands();
-        window.update();
+        window.update(scene);
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
