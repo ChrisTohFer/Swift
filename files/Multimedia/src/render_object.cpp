@@ -9,11 +9,6 @@ namespace
     }
 }
 
-bool SWIFT::RENDER_OBJECT::operator<(RENDER_OBJECT const& rhs) const
-{
-    return priority < rhs.priority;
-}
-
 SWIFT::RECT::RECT(VECTOR2F const& pos, VECTOR2F const& size)
     : pos(pos), size(size)
 {}
@@ -35,6 +30,7 @@ void SWIFT::CIRCLE::draw(BACKEND_WINDOW& window)
     sf::CircleShape circle;
     circle.setRadius(radius);
     circle.setPosition(convert(pos));
+    circle.setFillColor(sf::Color::Red);
 
     window.draw(circle);
 }

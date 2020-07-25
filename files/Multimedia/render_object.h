@@ -9,7 +9,6 @@ namespace SWIFT
     struct RENDER_OBJECT
     {
         virtual void draw(BACKEND_WINDOW&) = 0;
-        bool operator<(RENDER_OBJECT const&) const;
 
         int priority = 0;
     };

@@ -84,6 +84,7 @@ public:
             auto radius = (event.pos() - m_pos1).abs();
             auto position = m_pos1 - SWIFT::VECTOR2F(radius, radius);
             m_vector.push_back(std::make_unique<SWIFT::CIRCLE>(position, radius));
+            m_vector.back()->priority = 1;
             m_scene.add_object(++g_id, *m_vector.back());
         }
     }
