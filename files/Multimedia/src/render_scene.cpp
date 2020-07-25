@@ -1,75 +1,25 @@
 #include "render_scene.h"
-
 #include "internal_types.h"
-
+#include "GlobalHeaders/macros.h"
 #include "SFML/Graphics.hpp"
 
-namespace
+void SWIFT::RENDER_SCENE::add_object(int id, RENDER_OBJECT& obj)
 {
-    sf::Vector2f convert(SWIFT::VECTOR2F vec)
-    {
-        return sf::Vector2f(vec.x, vec.y);
-    }
+    ASSERT(m_objects.find(id) == m_objects.end());  //We mustn't use the same id for two objects at once
+
+    m_objects.emplace(id, &obj);
 }
 
-SWIFT::SHAPE::SHAPE(VECTOR2F const& pos, VECTOR2F const& s)
+void SWIFT::RENDER_SCENE::remove_object(int id)
 {
-    m_position = pos;
-    m_size = s;
-}
-
-SWIFT::VECTOR2F SWIFT::SHAPE::position() const
-{
-    return m_position;
-}
-
-SWIFT::VECTOR2F SWIFT::SHAPE::centre() const
-{
-    return m_position + m_size / 2.f;
-}
-
-SWIFT::VECTOR2F SWIFT::SHAPE::size() const
-{
-    return m_size;
-}
-
-void SWIFT::SHAPE::position(VECTOR2F const& pos)
-{
-    m_position = pos;
-}
-
-void SWIFT::SHAPE::centre(VECTOR2F const& cen)
-{
-    m_position = cen - m_size / 2;
-}
-
-void SWIFT::SHAPE::size(VECTOR2F const& s)
-{
-    m_size = s;
-}
-
-SWIFT::RECT::RECT(VECTOR2F const& pos, VECTOR2F const& s)
-    : SHAPE(pos, s)
-{}
-
-void SWIFT::RECT::draw(BACKEND_WINDOW& window)
-{
-    sf::RectangleShape rect(convert(m_size));
-    rect.setPosition(convert(m_position));
-
-    window.draw(rect);
-}
-
-void SWIFT::RENDER_SCENE::addRectangle(RECT const& rect)
-{
-    m_rectangles.push_back(rect);
+    m_objects.erase(id);
 }
 
 void SWIFT::RENDER_SCENE::draw(BACKEND_WINDOW& window)
 {
-    for (RECT& rect : m_rectangles)
+    for (auto& element : m_objects)
     {
-        rect.draw(window);
+        element.second->draw(window);
     }
 
     m_drawn = true;

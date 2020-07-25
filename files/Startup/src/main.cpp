@@ -1,10 +1,15 @@
 #include "Multimedia/window.h"
 
+#include "Types/event.h"
+#include "console.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
+#include <vector>
 
-#include "console.h"
+int g_id = 0;
 
 static bool& running()
 {
@@ -16,61 +21,13 @@ static void stop_running()
     running() = false;
 }
 
-class LISTENER : public SWIFT::INPUT::KEY_LISTENER
-{
-public:
-    LISTENER(SWIFT::CONSOLE& console)
-        : m_console(console)
-    {}
-    virtual void notify(SWIFT::KEY key, SWIFT::INPUT::KEY_STATUS const& status) override
-    {
-        auto str = std::to_wstring((int)key);
-        str += L", ";
-        str += status.held     ? L"held " : L"";
-        str += status.pressed  ? L"pressed " : L"";
-        str += status.released ? L"released " : L"";
-                               
-        str += L", ";
-        str += status.alt      ? L"alt " : L"";
-        str += status.control  ? L"control " : L"";
-        str += status.shift    ? L"shift " : L"";
-        str += status.system   ? L"system " : L"";
-
-        m_console.output(str);
-        m_console.output(L"\n");
-    }
-private:
-    SWIFT::CONSOLE& m_console;
-};
-
-class LISTENER2 : public SWIFT::INPUT::MOUSE_LISTENER
-{
-public:
-    LISTENER2(SWIFT::CONSOLE& console)
-        : m_console(console)
-    {}
-    virtual void notify(SWIFT::MOUSE_EVENT event)
-    {
-        auto str = std::to_wstring((int)event.button);
-        str += L", ";
-        str += std::to_wstring(event.posX);
-        str += L", ";
-        str += std::to_wstring(event.posY);
-        str += L", ";
-        str += event.pressed ? L"Pressed" : L"Released";
-
-        m_console.output(str);
-        m_console.output(L"\n");
-    }
-private:
-    SWIFT::CONSOLE& m_console;
-};
-
 class RECT_LISTENER : public SWIFT::INPUT::MOUSE_LISTENER
 {
 public:
     RECT_LISTENER(SWIFT::RENDER_SCENE& scene)
         : m_scene(scene)
+        , m_held(false)
+        , m_pos1()
     {}
 
     virtual void notify(SWIFT::MOUSE_EVENT event)
@@ -81,21 +38,62 @@ public:
         if(event.pressed)
         { 
             m_held = true;
-            m_pos1 = SWIFT::VECTOR2F(event.posX, event.posY);
+            m_pos1 = event.pos();
         }
 
         if (!event.pressed && m_held)
         {
             m_held = false;
-            SWIFT::RECT rect(m_pos1, SWIFT::VECTOR2F(event.posX, event.posY) - m_pos1);
-            m_scene.addRectangle(rect);
+            m_vector.push_back(std::make_unique<SWIFT::RECT>(m_pos1, event.pos() - m_pos1));
+            m_scene.add_object(++g_id, *m_vector.back());
         }
     }
 
 private:
     SWIFT::RENDER_SCENE& m_scene;
     SWIFT::VECTOR2F m_pos1;
-    bool m_held;
+    bool m_held = false;
+
+    std::vector<std::unique_ptr<SWIFT::RECT>> m_vector;
+};
+
+class CIRCLE_LISTENER : public SWIFT::INPUT::MOUSE_LISTENER
+{
+public:
+    CIRCLE_LISTENER(SWIFT::RENDER_SCENE& scene)
+        : m_scene(scene)
+        , m_held(false)
+        , m_pos1()
+    {}
+
+    virtual void notify(SWIFT::MOUSE_EVENT event)
+    {
+        if (event.button != SWIFT::MOUSE_BUTTON::RIGHT)
+            return;
+
+        if(event.pressed)
+        { 
+            m_held = true;
+            m_pos1 = event.pos();
+        }
+
+        if (!event.pressed && m_held)
+        {
+            m_held = false;
+
+            auto radius = (event.pos() - m_pos1).abs();
+            auto position = m_pos1 - SWIFT::VECTOR2F(radius, radius);
+            m_vector.push_back(std::make_unique<SWIFT::CIRCLE>(position, radius));
+            m_scene.add_object(++g_id, *m_vector.back());
+        }
+    }
+
+private:
+    SWIFT::RENDER_SCENE& m_scene;
+    SWIFT::VECTOR2F m_pos1;
+    bool m_held = false;
+
+    std::vector<std::unique_ptr<SWIFT::CIRCLE>> m_vector;
 };
 
 int main()
@@ -109,15 +107,12 @@ int main()
     console.add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
     console.add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
 
-    LISTENER listener(console);
-    LISTENER2 listener2(console);
-    window.input().listen_for_keys(listener);
-    window.input().listen_for_mouse(listener2);
-
     SWIFT::RENDER_SCENE scene;
 
     RECT_LISTENER rl(scene);
+    CIRCLE_LISTENER cl(scene);
     window.input().listen_for_mouse(rl);
+    window.input().listen_for_mouse(cl);
 
     std::wstring input;
     while (running())
@@ -128,6 +123,7 @@ int main()
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
     }
+    window.close_window();
 
     return 0;
 }

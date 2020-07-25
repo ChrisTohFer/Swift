@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types/event.h"
+#include "Types/vector.h"
 
 #include <array>
 #include <vector>
@@ -149,6 +150,11 @@ namespace SWIFT
 
     struct MOUSE_EVENT
     {
+        VECTOR2F pos()
+        {
+            return VECTOR2F(float(posX), float(posY));
+        }
+
         MOUSE_BUTTON button;
         int posX;
         int posY;
