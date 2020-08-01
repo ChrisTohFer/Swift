@@ -61,10 +61,13 @@ workspace "SwiftEngine"
 	filter{}
 	
 	--Projects--
-	group			"Core Projects"
+	group			"0. Base Projects"
+	generate_project("Console", "StaticLib")
 	generate_project("GlobalHeaders", "StaticLib")
 	generate_project("Platform", "StaticLib")
 	generate_project("Types", "StaticLib")
+	
+	group           "1. Core Projects"
 	generate_project("FileIO", "StaticLib")
 	generate_project("ECSystem", "StaticLib")
 	generate_project("Multimedia", "StaticLib")

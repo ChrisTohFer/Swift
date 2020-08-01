@@ -41,9 +41,7 @@ project (project_name)
 	
 	local project_files = FILES_PATH..project_name.."/"
 	files{
-		project_files.."src/**.cpp",
-		project_files.."src/**.h",
-		project_files.."include/**.h",
+		project_files.."src/*.*",
 		project_files.."*.*"
 	}
 	
@@ -55,7 +53,8 @@ project (project_name)
 	
 	vpaths{
 		["redist"] = project_files.."*.h",
-		["source"] = project_files.."src/**.*"
+		["source"] = project_files.."src/**.*",
+		["inline"] = project_files.."*.inl"
 	}
 	
 	--Config specific directories--

@@ -22,7 +22,7 @@ void SWIFT::EC::ENTITY::add_component(const NAME_TYPE& name)
 	}
 	else
 	{
-		CONSOLE_WARNING("Attempted to add a non-existing component");
+		CONSOLE_WARNING(L"Attempted to add a non-existing component");
 	}
 }
 

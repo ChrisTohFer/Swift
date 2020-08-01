@@ -1,10 +1,12 @@
 
 import_projects{
+	"Console",
 	"Platform",
 	"Types",
-	"FileIO",
+	
 	"ECSystem",
-	"Multimedia"
+	"FileIO",
+	"Multimedia",
 }
 
 import_sfml()

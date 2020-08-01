@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 
 SWIFT::CONSOLE::CONSOLE(std::wistream& istream, std::wostream& ostream)
     : m_istream(istream), m_ostream(ostream)
@@ -94,4 +95,10 @@ void SWIFT::CONSOLE::output_command_map()
     {
         m_ostream << std::left << std::setw(20) << command.first << " - " << command.second->description << "\n";
     }
+}
+
+SWIFT::CONSOLE& SWIFT::console()
+{
+    static CONSOLE c(std::wcin, std::wcout);
+    return c;
 }

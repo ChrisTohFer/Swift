@@ -1,7 +1,7 @@
 #include "Multimedia/window.h"
 
 #include "Types/event.h"
-#include "console.h"
+#include "Console/console.h"
 
 #include <iostream>
 #include <string>
@@ -99,14 +99,15 @@ private:
 
 int main()
 {
-    SWIFT::CONSOLE console(std::wcin, std::wcout);
+    using SWIFT::console;
+
     SWIFT::WINDOW window;
     window.title(L"This is not the title");
     window.create_window(200, 200);
 
-    console.add_console_command(L"exit", L"Exit the application.", &stop_running);
-    console.add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
-    console.add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
+    console().add_console_command(L"exit", L"Exit the application.", &stop_running);
+    console().add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
+    console().add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
 
     SWIFT::RENDER_SCENE scene;
 
@@ -118,7 +119,7 @@ int main()
     std::wstring input;
     while (running())
     {
-        console.invoke_commands();
+        console().invoke_commands();
         window.update(scene);
 
         using namespace std::chrono_literals;

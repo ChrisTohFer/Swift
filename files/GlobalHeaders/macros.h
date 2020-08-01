@@ -1,10 +1,10 @@
 
 #if CONFIGURATION == DEBUG
 
-#include <iostream>
+#include "Console/console.h"
 
 #define DEBUG_ONLY(...)			__VA_ARGS__
-#define CONSOLE_WARNING(msg)	std::cout << "WARNING:\t" << msg << std::endl;
+#define CONSOLE_WARNING(msg)	SWIFT::console().output(std::wstring(L"WARNING:\t") + std::wstring(msg) + L"\n");
 #define ASSERT(...)             _ASSERT(__VA_ARGS__)
 
 #else

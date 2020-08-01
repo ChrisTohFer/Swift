@@ -172,7 +172,7 @@ bool SWIFT::IO::DESERIALISER::verify_type()	//Don't read data that is unexpected
 
 	if (type_required != TYPE(type))
 	{
-		CONSOLE_WARNING("encountered an incorrect type during deserialisation.")
+		CONSOLE_WARNING(L"encountered an incorrect type during deserialisation.")
 			stream.seekg(pos);
 		return false;
 	}
