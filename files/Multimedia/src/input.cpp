@@ -29,10 +29,10 @@ void SWIFT::INPUT::update(MOUSE_UPDATE& mouse_updates, KEY_ARRAY<KEY_UPDATE>& ke
         key_status.pressed  = !key_status.held && (update.changed_since_last_frame || update.held);
         key_status.held     = key_status.pressed || (key_status.held && !key_status.released);
 
-        key_status.alt     = key_status.pressed && update.alt     || !key_status.pressed && key_status.alt;
-        key_status.control = key_status.pressed && update.control || !key_status.pressed && key_status.control;
-        key_status.shift   = key_status.pressed && update.shift   || !key_status.pressed && key_status.shift;
-        key_status.system  = key_status.pressed && update.system  || !key_status.pressed && key_status.system;
+        key_status.alt     = (key_status.pressed && update.alt    ) || (!key_status.pressed && key_status.alt    );
+        key_status.control = (key_status.pressed && update.control) || (!key_status.pressed && key_status.control);
+        key_status.shift   = (key_status.pressed && update.shift  ) || (!key_status.pressed && key_status.shift  );
+        key_status.system  = (key_status.pressed && update.system ) || (!key_status.pressed && key_status.system );
 
         update.changed_since_last_frame = false;
 

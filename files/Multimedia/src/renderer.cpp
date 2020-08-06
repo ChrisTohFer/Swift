@@ -67,7 +67,6 @@ void SWIFT::RENDERER::IMPL::render_loop()
 		//temporary
 		auto temp = std::to_string(timer.average_cycle_time());
 		cycle_time_text.setString(temp);
-		auto now = std::chrono::system_clock::now();
 		//~temporary
 
 		m_window.clear(sf::Color::Black);

@@ -232,7 +232,7 @@ void SWIFT::IO::SIMPLIFIED<MEMBERS...>::deserialise(DESERIALISER& deserialiser)
 //Non-member functions
 
 template<typename ... ARGS>
-SWIFT::IO::UNIQUE_SERIALISABLE SWIFT::IO::simplify<ARGS...>(ARGS&... args)
+SWIFT::IO::UNIQUE_SERIALISABLE SWIFT::IO::simplify(ARGS&... args)
 {
 	return UNIQUE_SERIALISABLE(new SIMPLIFIED(args...));
 }

@@ -26,8 +26,8 @@ class RECT_LISTENER : public SWIFT::INPUT::MOUSE_LISTENER
 public:
     RECT_LISTENER(SWIFT::RENDER_SCENE& scene)
         : m_scene(scene)
-        , m_held(false)
         , m_pos1()
+        , m_held(false)
     {}
 
     virtual void notify(SWIFT::MOUSE_EVENT event)
@@ -62,8 +62,8 @@ class CIRCLE_LISTENER : public SWIFT::INPUT::MOUSE_LISTENER
 public:
     CIRCLE_LISTENER(SWIFT::RENDER_SCENE& scene)
         : m_scene(scene)
-        , m_held(false)
         , m_pos1()
+        , m_held(false)
     {}
 
     virtual void notify(SWIFT::MOUSE_EVENT event)

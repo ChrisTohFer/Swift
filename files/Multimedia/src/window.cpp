@@ -34,7 +34,7 @@ namespace SWIFT
 		void title(const wchar_t*);
 
 		bool is_open() const;
-		const sf::WindowHandle handle() const;
+		sf::WindowHandle handle() const;
 		BACKEND_WINDOW& window();
 
 		void lock_input_mutex();
@@ -90,7 +90,7 @@ bool SWIFT::WINDOW::IMPL::is_open() const
 	return m_window.isOpen();
 }
 
-const sf::WindowHandle SWIFT::WINDOW::IMPL::handle() const
+sf::WindowHandle SWIFT::WINDOW::IMPL::handle() const
 {
 	return m_window.getSystemHandle();
 }
@@ -166,6 +166,8 @@ void SWIFT::WINDOW::IMPL::window_loop(const wchar_t* title, bool borderless, int
 				break;
 			case sf::Event::MouseLeft:
 				handle_mouse_left();
+				break;
+			default:
 				break;
 			}
 		}

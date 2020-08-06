@@ -61,7 +61,7 @@ namespace SWIFT{
         auto command = std::make_unique<COMMAND_NONMEMBER<ARGS...>>(m_fn);
         if constexpr (sizeof...(ARGS) != 0)
         {
-            if (!command->read_arguments_from_stream_recursive<0, sizeof...(ARGS)>(command_stream))
+            if (!command->template read_arguments_from_stream_recursive<0, sizeof...(ARGS)>(command_stream))
                 return false;
         }
 
@@ -85,7 +85,7 @@ namespace SWIFT{
         auto command = std::make_unique<COMMAND_MEMBER<T, ARGS...>>(m_target, m_fn);
         if constexpr (sizeof...(ARGS) != 0)
         {
-            if (!command->read_arguments_from_stream_recursive<0, sizeof...(ARGS)>(command_stream))
+            if (!command->template read_arguments_from_stream_recursive<0, sizeof...(ARGS)>(command_stream))
                 return false;
         }
 

@@ -1,4 +1,4 @@
-#include "Serialisation.h"
+#include "serialisation.h"
 #include <string>
 
 //SERIALISER
@@ -187,6 +187,8 @@ void SWIFT::IO::DESERIALISER::next_separator()
 			size_t size;
 			stream >> size;
 			stream.ignore(size);
+		default:
+			break;
 		}
 
 		stream >> type;

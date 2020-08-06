@@ -16,6 +16,7 @@ namespace SWIFT
     struct RECT : public RENDER_OBJECT
     {
         RECT(VECTOR2F const& pos, VECTOR2F const& size);
+        virtual ~RECT() = default;
 
         void draw(BACKEND_WINDOW&) override;
 
@@ -26,6 +27,7 @@ namespace SWIFT
     struct CIRCLE : public RENDER_OBJECT
     {
         CIRCLE(VECTOR2F const& pos, float const& radius);
+        virtual ~CIRCLE() = default;
 
         void draw(BACKEND_WINDOW&) override;
 
