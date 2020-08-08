@@ -16,12 +16,13 @@ namespace SWIFT
 
 		bool operator==(const ID& other) const;
 		bool operator!=(const ID& other) const;
+		bool operator<(const ID& other) const;
 	};
 
 	//Provides a way to ID types
 	//Each different type that we access get_type_id with will cause a new id to be created which is unique to that type
 
-	using TYPE_ID = ID<int>;
+	using TYPE_ID = ID<struct TYPE_ID_T>;
 
 	template<typename TYPE>
 	TYPE_ID get_type_id();
@@ -55,6 +56,12 @@ template<typename UNIQUE_TYPE, typename ID_TYPE>
 bool SWIFT::ID<UNIQUE_TYPE, ID_TYPE>::operator!=(const ID& other) const
 {
 	return m_id != other.m_id;
+}
+
+template<typename UNIQUE_TYPE, typename ID_TYPE>
+inline bool SWIFT::ID<UNIQUE_TYPE, ID_TYPE>::operator<(const ID& other) const
+{
+	return m_id < other.m_id;
 }
 
 //TYPE_ID
