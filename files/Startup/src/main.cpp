@@ -2,6 +2,7 @@
 
 #include "Types/event.h"
 #include "Console/console.h"
+#include "ECSystem/entity.h"
 
 #include <iostream>
 #include <string>
@@ -97,8 +98,38 @@ private:
     std::vector<std::unique_ptr<SWIFT::CIRCLE>> m_vector;
 };
 
+struct type1
+{
+    int a = 1;
+};
+struct type2
+{
+    int a = 2;
+};
+struct type3
+{
+    int a = 3;
+};
+struct type4
+{
+    int a = 4;
+};
 int main()
 {
+    const SWIFT::EC::ENTITY<type1, type2, type3> ent;
+    
+    if(ent.has_components<type2, type1>())
+        std::cout << "Has 1 and 2\n";
+    if(ent.has_components<type1, type2, type3>())
+        std::cout << "1 2 and 3\n";
+    if(ent.has_components<type3, type4>())
+        std::cout << "Has 3 and 4\n";
+    if(ent.has_component<type3>())
+        std::cout << "Has 3\n";
+
+    std::cout << ent.component<type3>().a << "\n";
+
+
     using SWIFT::console;
 
     SWIFT::WINDOW window;
