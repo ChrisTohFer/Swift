@@ -116,7 +116,7 @@ struct type4
 };
 int main()
 {
-    const SWIFT::EC::ENTITY<type1, type2, type3> ent;
+    SWIFT::EC::ENTITY<type1, type2, type3> ent;
     
     if(ent.has_components<type2, type1>())
         std::cout << "Has 1 and 2\n";
@@ -127,7 +127,7 @@ int main()
     if(ent.has_component<type3>())
         std::cout << "Has 3\n";
 
-    std::cout << ent.component<type3>().a << "\n";
+    std::cout << ent.component<type1>().a << "\n";
 
 
     using SWIFT::console;

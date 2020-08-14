@@ -1,26 +1,32 @@
 #pragma once
 
 #include "Types/id.h"
+#include "GlobalHeaders/template_helpers.h"
 
 #include <type_traits>
+#include <tuple>
 
 namespace SWIFT::EC
 {
     using ENTITY_ID = ID<struct ENTITY_T>;
 
-    struct ENTITY_BASE
+    class ENTITY_BASE
     {
+    protected:
         ENTITY_ID id;
     };
 
     //ENTITY is a collection of components bundled together with an id
     template<typename ... COMPONENTS>
-    struct ENTITY : public ENTITY_BASE, protected COMPONENTS ...
+    class ENTITY : public ENTITY_BASE
     {
+        std::tuple<COMPONENTS...> m_components;
+
+    public:
         template<typename REQUIRED_COMPONENT>
-        constexpr bool has_component() const;
+        static constexpr bool has_component();
         template<typename ... REQUIRED_COMPONENTS>
-        constexpr bool has_components() const;
+        static constexpr bool has_components();
 
         template<typename COMPONENT>
         COMPONENT& component();
