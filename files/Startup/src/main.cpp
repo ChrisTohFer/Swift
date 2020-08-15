@@ -3,6 +3,8 @@
 #include "Types/event.h"
 #include "Console/console.h"
 #include "ECSystem/entity.h"
+#include "ECSystem/entity_holder.h"
+#include "ECSystem/system.h"
 
 #include <iostream>
 #include <string>
@@ -114,21 +116,44 @@ struct type4
 {
     int a = 4;
 };
+
+using ENTITY1 = SWIFT::EC::ENTITY<type1>;
+using ENTITY2 = SWIFT::EC::ENTITY<type1, type2>;
+using ENTITY3 = SWIFT::EC::ENTITY<type1, type3, type4>;
+using HOLDER = SWIFT::EC::ENTITY_HOLDER<ENTITY1, ENTITY2, ENTITY3>;
+
+class SYSTEM1 : public SWIFT::EC::SYSTEM<SYSTEM1, type1>
+{
+public:
+    virtual void update_per_entity(type1& t1)
+    {
+        std::cout << t1.a << "\n";
+    }
+};
+class SYSTEM2 : public SWIFT::EC::SYSTEM<SYSTEM2, type2>
+{
+public:
+    void update_per_entity(type2& t2)
+    {
+        std::cout << t2.a << "\n";
+    }
+};
+
 int main()
 {
-    SWIFT::EC::ENTITY<type1, type2, type3> ent;
-    
-    if(ent.has_components<type2, type1>())
-        std::cout << "Has 1 and 2\n";
-    if(ent.has_components<type1, type2, type3>())
-        std::cout << "1 2 and 3\n";
-    if(ent.has_components<type3, type4>())
-        std::cout << "Has 3 and 4\n";
-    if(ent.has_component<type3>())
-        std::cout << "Has 3\n";
+    HOLDER holder;
+    SYSTEM1 s1;
+    SYSTEM2 s2;
 
-    std::cout << ent.component<type1>().a << "\n";
+    holder.insert(ENTITY1());
+    holder.insert(ENTITY2());
+    holder.insert(ENTITY1());
+    holder.insert(ENTITY2());
+    holder.insert(ENTITY1());
+    holder.insert(ENTITY3());
 
+    s1.update(holder);
+    s2.update(holder);
 
     using SWIFT::console;
 
