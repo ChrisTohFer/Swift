@@ -45,6 +45,11 @@ workspace "SwiftEngine"
 	stringpooling		"On"
 	exceptionhandling	"Off"
 	
+	buildoptions
+	{
+		"/permissive-"
+	}
+	
 	filter "configurations:debug"
 		optimize 	"Off"
 	filter "configurations:release"
