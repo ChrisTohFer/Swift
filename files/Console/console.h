@@ -1,12 +1,13 @@
 #pragma once
 
-#include <thread>
+#include <functional>
+#include <istream>
+#include <map>
+#include <memory>
 #include <mutex>
 #include <string>
-#include <functional>
-#include <map>
+#include <thread>
 #include <vector>
-#include <memory>
 
 namespace SWIFT
 {
