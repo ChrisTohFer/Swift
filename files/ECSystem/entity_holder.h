@@ -23,6 +23,10 @@ namespace SWIFT::EC
         {
             return m_entities.emplace(entity.id(), std::move(entity)).first->second;
         }
+        void remove(ENTITY_ID id)
+        {
+            m_entities.erase(id);
+        }
 
         auto begin() { return m_entities.begin(); }
         auto end() { return m_entities.end(); }
@@ -34,16 +38,31 @@ namespace SWIFT::EC
     class ENTITY_HOLDER
     {
     public:
+        //Queries
+        template<typename ENTITY_TYPE>
+        static constexpr bool has_entity()
+        {
+            return (std::is_same<ENTITY_TYPE, ENTITY_TYPES>::value || ...);
+        }
+
+        //Retrieval functions
         template<typename ENTITY_TYPE>
         ENTITY_MAP<ENTITY_TYPE>& entity_map()
         {
             auto constexpr index = VARIADIC_INDEX<ENTITY_TYPE, ENTITY_TYPES...>::index;
             return std::get<index>(m_maps);
         }
+
+        //Manipulators
         template<typename ENTITY_TYPE>
         ENTITY_TYPE& insert(ENTITY_TYPE&& entity)
         {
             return entity_map<ENTITY_TYPE>().insert(std::move(entity));
+        }
+        template<typename ENTITY_TYPE>
+        void remove(ENTITY_ID id)
+        {
+            return entity_map<ENTITY_TYPE>().remove(id);
         }
 
     private:

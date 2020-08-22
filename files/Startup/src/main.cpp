@@ -5,6 +5,8 @@
 #include "ECSystem/entity.h"
 #include "ECSystem/entity_holder.h"
 #include "ECSystem/system.h"
+#include "ECSystem/system_holder.h"
+#include "ECSystem/scene.h"
 
 #include <iostream>
 #include <string>
@@ -117,11 +119,6 @@ struct type4
     int a = 4;
 };
 
-using ENTITY1 = SWIFT::EC::ENTITY<type1>;
-using ENTITY2 = SWIFT::EC::ENTITY<type1, type2>;
-using ENTITY3 = SWIFT::EC::ENTITY<type1, type3, type4>;
-using HOLDER = SWIFT::EC::ENTITY_HOLDER<ENTITY1, ENTITY2, ENTITY3>;
-
 class SYSTEM1 : public SWIFT::EC::SYSTEM<SYSTEM1, type1>
 {
 public:
@@ -139,21 +136,28 @@ public:
     }
 };
 
+using ENTITY1 = SWIFT::EC::ENTITY<type1>;
+using ENTITY2 = SWIFT::EC::ENTITY<type1, type2>;
+using ENTITY3 = SWIFT::EC::ENTITY<type1, type3, type4>;
+using HOLDER = SWIFT::EC::ENTITY_HOLDER<ENTITY1, ENTITY2, ENTITY3>;
+using SYSTEM_HOLDER = SWIFT::EC::SYSTEM_HOLDER<SYSTEM1, SYSTEM2>;
+using SCENE = SWIFT::EC::SCENE<HOLDER, SYSTEM_HOLDER>;
+
 int main()
 {
     HOLDER holder;
-    SYSTEM1 s1;
-    SYSTEM2 s2;
+    SYSTEM_HOLDER sholder;
+    SCENE s;
+    
+    
+    s.add_entity(ENTITY1());
+    s.add_entity(ENTITY2());
+    s.add_entity(ENTITY1());
+    s.add_entity(ENTITY2());
+    s.add_entity(ENTITY1());
+    s.add_entity(ENTITY3());
 
-    holder.insert(ENTITY1());
-    holder.insert(ENTITY2());
-    holder.insert(ENTITY1());
-    holder.insert(ENTITY2());
-    holder.insert(ENTITY1());
-    holder.insert(ENTITY3());
-
-    s1.update(holder);
-    s2.update(holder);
+    s.update();
 
     using SWIFT::console;
 
