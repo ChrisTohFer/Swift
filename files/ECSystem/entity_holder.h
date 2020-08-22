@@ -30,7 +30,7 @@ namespace SWIFT::EC
 
         auto begin() { return m_entities.begin(); }
         auto end() { return m_entities.end(); }
-        auto size() { return m_entities.size(); }
+        auto size() const { return m_entities.size(); }
     };
 
     //Entity holder is the container for all entities within a scene, it contains maps for a chosen set of entity types

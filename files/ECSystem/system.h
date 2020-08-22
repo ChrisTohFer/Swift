@@ -10,7 +10,15 @@ namespace SWIFT::EC
     template<typename DERIVED_SYSTEM, typename ...TARGET_COMPONENTS>
     class SYSTEM
     {
-    public:
+        size_t m_count;
+
+    protected:
+        size_t count()
+        {
+            return m_count;
+        }
+
+    private:
         template<typename ENTITY_TYPE>
         void update([[maybe_unused]] ENTITY_MAP<ENTITY_TYPE>& map)
         {
@@ -24,11 +32,18 @@ namespace SWIFT::EC
             }
         }
 
+    public:
         template<typename ...ENTITY_TYPES>
         void update(ENTITY_HOLDER<ENTITY_TYPES...>& holder)
         {
-            //Call update for every entity type
-            (update(holder.template entity_map<ENTITY_TYPES>()), ...);
+            m_count = 
+                (((ENTITY_TYPES::template has_components<TARGET_COMPONENTS...>()) //Applicable?
+                * holder.entity_map<ENTITY_TYPES>().size())                       //Size
+                + ...);  //Fold
+
+            static_cast<DERIVED_SYSTEM*>(this)->early_update();
+            (update(holder.template entity_map<ENTITY_TYPES>()), ...);  //Call update for every entity type
+            static_cast<DERIVED_SYSTEM*>(this)->late_update();
         }
     };
 

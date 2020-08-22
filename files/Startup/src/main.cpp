@@ -122,7 +122,16 @@ struct type4
 class SYSTEM1 : public SWIFT::EC::SYSTEM<SYSTEM1, type1>
 {
 public:
-    virtual void update_per_entity(type1& t1)
+    void early_update()
+    {
+        std::cout << count() << "\n";
+    }
+    void late_update()
+    {
+
+    }
+
+    void update_per_entity(type1& t1)
     {
         std::cout << t1.a << "\n";
     }
@@ -130,6 +139,15 @@ public:
 class SYSTEM2 : public SWIFT::EC::SYSTEM<SYSTEM2, type2>
 {
 public:
+    void early_update()
+    {
+        std::cout << count() << "\n";
+    }
+    void late_update()
+    {
+
+    }
+
     void update_per_entity(type2& t2)
     {
         std::cout << t2.a << "\n";
