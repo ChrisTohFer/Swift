@@ -14,7 +14,7 @@ namespace SWIFT
 		void begin(struct BACKEND_WINDOW&);
 		void stop();
 
-		void update_scene(RENDER_SCENE const&);
+		void update_scene(RENDER_SCENE&&);
 
 	private:
 		IMPL* m_impl = nullptr;

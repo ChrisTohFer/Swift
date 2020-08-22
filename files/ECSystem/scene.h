@@ -9,6 +9,7 @@ namespace SWIFT::EC
     template<typename ENTITIES, typename SYSTEMS>
     class SCENE
     {
+    protected:
         ENTITIES m_entity_holder;
         SYSTEMS  m_system_holder;
 

@@ -8,6 +8,8 @@ namespace SWIFT
 
     struct RENDER_OBJECT
     {
+        virtual ~RENDER_OBJECT() = default;
+
         virtual void draw(BACKEND_WINDOW&) = 0;
 
         int priority = 0;

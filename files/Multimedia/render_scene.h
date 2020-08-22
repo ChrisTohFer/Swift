@@ -1,26 +1,29 @@
 #pragma once
 
 #include "render_object.h"
-#include <map>
+#include <memory>
+#include <vector>
 
 namespace SWIFT
 {
     struct BACKEND_WINDOW;
     
+    using UP_RENDER_OBJECT = std::unique_ptr<RENDER_OBJECT>;
+
     class RENDER_SCENE
     {
-        using RENDER_MAP = std::map<int, RENDER_OBJECT*>;
+        using RENDER_VECTOR = std::vector<UP_RENDER_OBJECT>;
 
     public:
-        void add_object(int, RENDER_OBJECT&);
-        void remove_object(int);
+        void add_object(UP_RENDER_OBJECT&&);
+        void clear_and_reserve(size_t);
 
         void draw(BACKEND_WINDOW&);
         bool drawn() const;
 
     private:
-        RENDER_MAP m_objects;
-        bool       m_drawn = false;
+        RENDER_VECTOR m_objects;
+        bool          m_drawn = false;
     };
 
 }

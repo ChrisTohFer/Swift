@@ -1,40 +1,30 @@
 #include "render_scene.h"
 #include "internal_types.h"
-#include "GlobalHeaders/macros.h"
 #include "SFML/Graphics.hpp"
 
-#include <vector>
-
-void SWIFT::RENDER_SCENE::add_object(int id, RENDER_OBJECT& obj)
+void SWIFT::RENDER_SCENE::add_object(UP_RENDER_OBJECT&& ptr)
 {
-    ASSERT(m_objects.find(id) == m_objects.end());  //We mustn't use the same id for two objects at once
-
-    m_objects.emplace(id, &obj);
+    m_objects.push_back(std::move(ptr));
 }
 
-void SWIFT::RENDER_SCENE::remove_object(int id)
+void SWIFT::RENDER_SCENE::clear_and_reserve(size_t capacity)
 {
-    m_objects.erase(id);
+    m_objects.clear();
+    m_objects.reserve(capacity);
 }
 
 void SWIFT::RENDER_SCENE::draw(BACKEND_WINDOW& window)
 {
-    //Create a sorted vector
-    std::vector<RENDER_OBJECT*> sorted_vector;
-    sorted_vector.reserve(m_objects.size());
-    for (auto& element : m_objects)
-    {
-        sorted_vector.push_back(element.second);
-    }
-    std::sort(sorted_vector.begin(), sorted_vector.end(),
-        [](auto lhs, auto rhs)
+    //Sort vector
+    std::sort(m_objects.begin(), m_objects.end(),
+        [](auto const& lhs, auto const& rhs)
         {
             return lhs->priority < rhs->priority;
         }
     );
     
-    //Draw the sorted list in order
-    for (auto& object : sorted_vector)
+    //Draw the sorted vector in order
+    for (auto& object : m_objects)
     {
         object->draw(window);
     }

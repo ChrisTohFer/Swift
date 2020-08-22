@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "GlobalHeaders/template_helpers.h"
 
 #include <tuple>
 
@@ -13,15 +14,22 @@ namespace SWIFT::EC
         std::tuple<SYSTEMS...> m_systems;
 
     public:
+        template<typename SYSTEM>
+        SYSTEM& system()
+        {
+            auto constexpr index = VARIADIC_INDEX<SYSTEM, SYSTEMS...>::index;
+            return std::get<index>(m_systems);
+        }
+        
         template<typename ...ENTITY_TYPES>
         void update(ENTITY_HOLDER<ENTITY_TYPES...>& entities)
         {
             update_systems_recursive<0>(entities);
         }
 
+    private:
         template<int INDEX, typename ...ENTITY_TYPES>
         void update_systems_recursive(ENTITY_HOLDER<ENTITY_TYPES...>& entities);
-
     };
 
     template<typename ...SYSTEMS>

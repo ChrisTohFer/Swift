@@ -15,7 +15,7 @@ public:
 	IMPL(BACKEND_WINDOW& window);
 	~IMPL();
 
-	void update_scene(RENDER_SCENE const&);
+	void update_scene(RENDER_SCENE&&);
 
 private:
 	void render_loop();
@@ -41,10 +41,10 @@ SWIFT::RENDERER::IMPL::~IMPL()
 	m_thread.join();
 }
 
-void SWIFT::RENDERER::IMPL::update_scene(RENDER_SCENE const& scene)
+void SWIFT::RENDERER::IMPL::update_scene(RENDER_SCENE&& scene)
 {
 	m_mutex.lock();
-	m_scene = scene;
+	m_scene = std::move(scene);
 	m_mutex.unlock();
 }
 
@@ -107,10 +107,10 @@ void SWIFT::RENDERER::stop()
 	m_impl = nullptr;
 }
 
-void SWIFT::RENDERER::update_scene(RENDER_SCENE const& scene)
+void SWIFT::RENDERER::update_scene(RENDER_SCENE&& scene)
 {
 	if(m_impl)
-		m_impl->update_scene(scene);
+		m_impl->update_scene(std::move(scene));
 }
 
 
