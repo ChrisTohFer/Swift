@@ -5,6 +5,9 @@
 #include "Types/vector.h"
 
 #include <random>
+#include <vector>
+
+//Services
 
 //Components
 
@@ -69,10 +72,11 @@ public:
 
 using ENTITIES = SWIFT::EC::ENTITY_HOLDER<BLANK>;
 using SYSTEMS = SWIFT::EC::SYSTEM_HOLDER<MOVEMENT, RENDERER>;
+using SERVICES = SWIFT::EC::SERVICE_HOLDER<>;
 
 //Scene
 
-class SAMPLE_SCENE : public SWIFT::EC::SCENE<ENTITIES, SYSTEMS>
+class SAMPLE_SCENE : public SWIFT::EC::SCENE<ENTITIES, SYSTEMS, SERVICES>
 {
 public:
     SAMPLE_SCENE(SWIFT::RENDER_SCENE& rscene)

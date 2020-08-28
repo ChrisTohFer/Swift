@@ -17,6 +17,8 @@ namespace SWIFT::EC
         template<typename SYSTEM>
         SYSTEM& system()
         {
+            static_assert((std::is_same<SYSTEMS, SYSTEM>::value || ...)); //Will fail if we don't contain the system that is asked for
+
             auto constexpr index = VARIADIC_INDEX<SYSTEM, SYSTEMS...>::index;
             return std::get<index>(m_systems);
         }
@@ -24,23 +26,8 @@ namespace SWIFT::EC
         template<typename ...ENTITY_TYPES>
         void update(ENTITY_HOLDER<ENTITY_TYPES...>& entities)
         {
-            update_systems_recursive<0>(entities);
+            (system<SYSTEMS>().update(entities), ...);
         }
-
-    private:
-        template<int INDEX, typename ...ENTITY_TYPES>
-        void update_systems_recursive(ENTITY_HOLDER<ENTITY_TYPES...>& entities);
     };
-
-    template<typename ...SYSTEMS>
-    template<int INDEX, typename ...ENTITY_TYPES>
-    void SYSTEM_HOLDER<SYSTEMS...>::update_systems_recursive([[maybe_unused]] ENTITY_HOLDER<ENTITY_TYPES...>& entities)
-    {
-        if constexpr (INDEX < sizeof...(SYSTEMS))
-        {
-            std::get<INDEX>(m_systems).update(entities);
-            update_systems_recursive<INDEX + 1>(entities);
-        }
-    }
 
 }
