@@ -16,6 +16,11 @@ struct TRANSFORM
     SWIFT::VECTOR2F position;
 };
 
+struct VELOCITY
+{
+    SWIFT::VECTOR2F velocity;
+};
+
 struct RENDER_COMPONENT
 {
 
@@ -23,11 +28,11 @@ struct RENDER_COMPONENT
 
 //Entities
 
-using BLANK = SWIFT::EC::ENTITY<TRANSFORM, RENDER_COMPONENT>;
+using BLANK = SWIFT::EC::ENTITY<TRANSFORM, VELOCITY, RENDER_COMPONENT>;
 
 //Systems
 
-class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, TRANSFORM>
+class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, TRANSFORM, VELOCITY>
 {
 public:
     template<typename SCENE>
@@ -41,18 +46,19 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, TRANSFORM& transform)
+    void update_per_entity(SCENE& scene, TRANSFORM& transform, VELOCITY& velocity)
     {
-        auto x_change = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
-        auto y_change = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
-        SWIFT::VECTOR2F position_change(x_change, y_change);
-        position_change *= 10.f;
-        transform.position += position_change;
+        transform.position += velocity.velocity;
 
-        if (static_cast<float>(std::rand()) / RAND_MAX < 1.0f / 300.f)  //1 in 300 chance per frame = doubles every 5 seconds or so
+        if (static_cast<float>(std::rand()) / RAND_MAX < 1.0f / 300.f)  //1 in 300 chance per frame = every 5 seconds or so
         {
+            auto x_vel = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
+            auto y_vel = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
+            velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 0.5f;
+
             BLANK b;
             b.component<TRANSFORM>() = transform;
+            b.component<VELOCITY>().velocity = -velocity.velocity;
             scene.instantiate(std::move(b));
         }
     }
@@ -96,11 +102,8 @@ public:
     {
         m_system_holder.system<RENDERER>().render_scene = &rscene;
 
-        for (auto i = 0u; i < 5u; ++i)
-        {
-            BLANK b;
-            b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
-            add_entity(std::move(b));
-        }
+        BLANK b;
+        b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
+        add_entity(std::move(b));
     }
 };
