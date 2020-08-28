@@ -41,7 +41,7 @@ int main()
             updates = 0;
             BLANK b;
             b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
-            ss.add_entity(std::move(b));
+            ss.instantiate(std::move(b));
         }
         console().invoke_commands();
         ss.update();

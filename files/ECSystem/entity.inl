@@ -36,3 +36,11 @@ const COMPONENT& SWIFT::EC::ENTITY<COMPONENTS...>::component() const
     constexpr auto index = VARIADIC_INDEX<COMPONENT, COMPONENTS...>::index;
     return std::get<index>(m_components);
 }
+
+template<typename ... COMPONENTS>
+SWIFT::EC::ENTITY<COMPONENTS...> SWIFT::EC::ENTITY<COMPONENTS...>::copy() const
+{
+    auto other = *this;
+    other.m_id = ENTITY_ID();
+    return other;
+}

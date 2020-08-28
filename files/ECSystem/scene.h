@@ -20,6 +20,7 @@ namespace SWIFT::EC
         void update()
         {
             m_service_holder.update();
+            m_entity_holder.update();
             m_system_holder.update(m_entity_holder);
         }
 
@@ -43,11 +44,18 @@ namespace SWIFT::EC
             return m_entity_holder.insert(std::move(entity));
         }
         template<typename ENTITY_TYPE>
-        ENTITY_TYPE& copy_entity(ENTITY_TYPE const& entity)
+        ENTITY_TYPE& instantiate(ENTITY_TYPE&& entity)
         {
             static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
 
+            return m_entity_holder.instantiate(std::move(entity));
+        }
+        template<typename ENTITY_TYPE>
+        ENTITY_TYPE& instantiate(ENTITY_TYPE const& entity)
+        {
+            static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
 
+            return m_entity_holder.instantiate(entity.copy());
         }
     };
 

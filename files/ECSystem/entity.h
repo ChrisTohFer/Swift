@@ -34,6 +34,8 @@ namespace SWIFT::EC
         COMPONENT& component();
         template<typename COMPONENT>
         const COMPONENT& component() const;
+
+        ENTITY copy() const;
     };
 }
 
