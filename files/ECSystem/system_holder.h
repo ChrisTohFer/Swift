@@ -23,10 +23,10 @@ namespace SWIFT::EC
             return std::get<index>(m_systems);
         }
         
-        template<typename ...ENTITY_TYPES>
-        void update(ENTITY_HOLDER<ENTITY_TYPES...>& entities)
+        template<typename SCENE, typename ...ENTITY_TYPES>
+        void update(SCENE& scene, ENTITY_HOLDER<ENTITY_TYPES...>& entities)
         {
-            (system<SYSTEMS>().update(entities), ...);
+            (system<SYSTEMS>().update(scene, entities), ...);
         }
     };
 

@@ -19,9 +19,9 @@ namespace SWIFT::EC
         //Systems + services
         void update()
         {
-            m_service_holder.update();
+            m_service_holder.update(*this);
             m_entity_holder.update();
-            m_system_holder.update(m_entity_holder);
+            m_system_holder.update(*this, m_entity_holder);
         }
 
         template<typename SYSTEM>

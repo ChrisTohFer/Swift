@@ -21,9 +21,10 @@ namespace SWIFT::EC
             return std::get<index>(m_services);
         }
 
-        void update()
+        template<typename SCENE>
+        void update(SCENE& scene)
         {
-            (service<SERVICES>().update(), ...);
+            (service<SERVICES>().update(scene), ...);
         }
     };
 

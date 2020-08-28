@@ -30,21 +30,31 @@ using BLANK = SWIFT::EC::ENTITY<TRANSFORM, RENDER_COMPONENT>;
 class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, TRANSFORM>
 {
 public:
-    void early_update()
+    template<typename SCENE>
+    void early_update(SCENE&)
     {
 
     }
-    void late_update()
+    template<typename SCENE>
+    void late_update(SCENE&)
     {
 
     }
-    void update_per_entity(TRANSFORM& transform)
+    template<typename SCENE>
+    void update_per_entity(SCENE& scene, TRANSFORM& transform)
     {
         auto x_change = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
         auto y_change = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
         SWIFT::VECTOR2F position_change(x_change, y_change);
         position_change *= 10.f;
         transform.position += position_change;
+
+        if (static_cast<float>(std::rand()) / RAND_MAX < 1.0f / 300.f)  //1 in 300 chance per frame = doubles every 5 seconds or so
+        {
+            BLANK b;
+            b.component<TRANSFORM>() = transform;
+            scene.instantiate(std::move(b));
+        }
     }
 };
 
@@ -53,15 +63,18 @@ class RENDERER : public SWIFT::EC::SYSTEM<RENDERER, TRANSFORM, RENDER_COMPONENT>
 public:
     SWIFT::RENDER_SCENE* render_scene;
 
-    void early_update()
+    template<typename SCENE>
+    void early_update(SCENE&)
     {
         render_scene->clear_and_reserve(count());
     }
-    void late_update()
+    template<typename SCENE>
+    void late_update(SCENE&)
     {
 
     }
-    void update_per_entity(TRANSFORM& transform, RENDER_COMPONENT&)
+    template<typename SCENE>
+    void update_per_entity(SCENE&, TRANSFORM& transform, RENDER_COMPONENT&)
     {
         auto circle = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::CIRCLE(transform.position, 5.f));
         render_scene->add_object(std::move(circle));

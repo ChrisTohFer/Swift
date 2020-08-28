@@ -32,17 +32,8 @@ int main()
     SAMPLE_SCENE ss(rscene);
 
     std::wstring input;
-    const int updates_per_spawn = 10;
-    int updates = 0;
     while (running())
     {
-        if (++updates == updates_per_spawn)
-        {
-            updates = 0;
-            BLANK b;
-            b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
-            ss.instantiate(std::move(b));
-        }
         console().invoke_commands();
         ss.update();
         window.update(std::move(rscene));
