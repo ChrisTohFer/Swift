@@ -200,6 +200,11 @@ void SWIFT::WINDOW::IMPL::handle_key_pressed(sf::Event const& event)
 	m_input_mutex.lock();
 
 	auto key = convert_key(event.key.code);
+	if (key == SWIFT::KEY::Unknown)
+	{
+		m_input_mutex.unlock();
+		return;
+	}
 	auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
 
 	key_update.changed_since_last_frame = !key_update.held;
@@ -216,7 +221,13 @@ void SWIFT::WINDOW::IMPL::handle_key_released(sf::Event const& event)
 {
 	m_input_mutex.lock();
 
-	auto key = convert_key(event.key.code);
+	auto key = convert_key(event.key.code); 
+	if (key == SWIFT::KEY::Unknown)
+	{
+		m_input_mutex.unlock();
+		return;
+	}
+
 	auto& key_update = m_parent.m_key_updates[static_cast<int>(key)];
 
 	key_update.changed_since_last_frame = key_update.held;
