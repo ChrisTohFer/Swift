@@ -9,10 +9,6 @@
 
 namespace SWIFT::EC
 {
-    //Way to associate sets of IDs with types - Note that the type is the same regardless of template parameter
-    template<typename ENTITY_TYPE>
-    using ID_SET = std::set<ENTITY_ID>;
-
     //Entity map is a map for a single entity type
     template<typename ...COMPONENT_TYPES>
     class ENTITY_MAP;
@@ -40,7 +36,7 @@ namespace SWIFT::EC
         {
             m_entities.erase(id);
         }
-        void remove(ID_SET<ENTITY<COMPONENT_TYPES...>> id_set)
+        void remove(std::set<ENTITY_ID> id_set)
         {
             for(auto id : id_set)
                 m_entities.erase(id);
@@ -91,15 +87,7 @@ namespace SWIFT::EC
             auto constexpr index = VARIADIC_INDEX<ENTITY_TYPE, ENTITY_TYPES...>::index;
             return std::get<index>(m_instantiated);
         }
-        template<typename ENTITY_TYPE>
-        ID_SET<ENTITY_TYPE>& destroy_id_set()
-        {
-            static_assert((std::is_same<ENTITY_TYPES, ENTITY_TYPE>::value || ...)); //Will fail if we don't contain the map that is asked for
-
-            auto constexpr index = VARIADIC_INDEX<ENTITY_TYPE, ENTITY_TYPES...>::index;
-            return std::get<index>(m_destroyed);
-        }
-
+        
         //Manipulators
         void update()
         {
@@ -107,19 +95,18 @@ namespace SWIFT::EC
             (entity_map<ENTITY_TYPES>().insert(instantiated_entity_map<ENTITY_TYPES>()), ...);
             (instantiated_entity_map<ENTITY_TYPES>().clear(), ...);
 
-            //Remove all destroyed entities and clear the sets
-            (entity_map<ENTITY_TYPES>().remove(destroy_id_set<ENTITY_TYPES>()), ...);
-            (destroy_id_set<ENTITY_TYPES>().clear(), ...);
+            //Remove all destroyed entities and clear the set
+            (entity_map<ENTITY_TYPES>().remove(m_destroyed), ...);  //Slightly inefficient - all maps must be checked for each ID
+            m_destroyed.clear();
         }
         template<typename ENTITY_TYPE>
         ENTITY_TYPE& instantiate(ENTITY_TYPE&& entity)
         {
             return instantiated_entity_map<ENTITY_TYPE>().insert(std::move(entity));
         }
-        template<typename ENTITY_TYPE>
         void destroy(ENTITY_ID id)
         {
-            destroy_id_set<ENTITY_TYPE>().emplace(id);
+            m_destroyed.emplace(id);
         }
 
         //Direct addition and removal of entities
@@ -137,7 +124,7 @@ namespace SWIFT::EC
     private:
         std::tuple<ENTITY_MAP<ENTITY_TYPES>...> m_entities;
         std::tuple<ENTITY_MAP<ENTITY_TYPES>...> m_instantiated;
-        std::tuple<ID_SET<ENTITY_TYPES>...>     m_destroyed;
+        std::set<ENTITY_ID>                     m_destroyed;
     };
     
 }

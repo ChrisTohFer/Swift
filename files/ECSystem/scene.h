@@ -57,7 +57,11 @@ namespace SWIFT::EC
 
             return m_entity_holder.instantiate(entity.copy());
         }
-        
+        void destroy(ENTITY_ID id)
+        {
+            m_entity_holder.destroy(id);
+        }
+
         template<typename ENTITY_TYPE>
         size_t entity_count()
         {

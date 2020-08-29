@@ -27,7 +27,7 @@ namespace SWIFT::EC
                 //We know that this entity type has the components we need - iterate
                 for (auto it = map.begin(), it_end = map.end(); it != it_end; ++it)
                 {
-                    static_cast<DERIVED_SYSTEM*>(this)->update_per_entity(scene, it->second.template component<TARGET_COMPONENTS>()...);
+                    static_cast<DERIVED_SYSTEM*>(this)->update_per_entity(scene, it->second, it->second.template component<TARGET_COMPONENTS>()...);
                 }
             }
         }

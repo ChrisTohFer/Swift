@@ -46,7 +46,7 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, TRANSFORM& transform, VELOCITY& velocity)
+    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, TRANSFORM& transform, VELOCITY& velocity)
     {
         transform.position += velocity.velocity;
 
@@ -60,6 +60,11 @@ public:
             b.component<TRANSFORM>() = transform;
             b.component<VELOCITY>().velocity = -velocity.velocity;
             scene.instantiate(std::move(b));
+        }
+
+        if (static_cast<float>(std::rand()) / RAND_MAX < (1.0f / 900000.f * scene.entity_count<void>()))    //1 in 300,000 chance multiplied by number of entities
+        {
+            scene.destroy(entity.id());
         }
     }
 };
@@ -80,7 +85,7 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE&, TRANSFORM& transform, RENDER_COMPONENT&)
+    void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, TRANSFORM& transform, RENDER_COMPONENT&)
     {
         auto circle = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::CIRCLE(transform.position, 5.f));
         render_scene->add_object(std::move(circle));
@@ -104,6 +109,6 @@ public:
 
         BLANK b;
         b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
-        add_entity(std::move(b));
+        instantiate(std::move(b));
     }
 };
