@@ -57,6 +57,13 @@ namespace SWIFT::EC
 
             return m_entity_holder.instantiate(entity.copy());
         }
+        
+        template<typename ENTITY_TYPE>
+        size_t entity_count()
+        {
+            return m_entity_holder.count<ENTITY_TYPE>();
+        }
+
     };
 
 }
