@@ -3,6 +3,8 @@
 #include "renderer.h"
 #include "input.h"
 
+#include "Types/vector.h"
+
 namespace SWIFT
 {
 	class WINDOW
@@ -21,6 +23,7 @@ namespace SWIFT
 
 		const wchar_t* title() const;
 		bool is_open() const;
+		SWIFT::VECTOR2F size() const;
 		INPUT& input();
 
 	private:

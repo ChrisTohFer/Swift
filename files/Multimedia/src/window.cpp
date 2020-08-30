@@ -35,6 +35,7 @@ namespace SWIFT
 
 		bool is_open() const;
 		sf::WindowHandle handle() const;
+		SWIFT::VECTOR2F size() const;
 		BACKEND_WINDOW& window();
 
 		void lock_input_mutex();
@@ -93,6 +94,12 @@ bool SWIFT::WINDOW::IMPL::is_open() const
 sf::WindowHandle SWIFT::WINDOW::IMPL::handle() const
 {
 	return m_window.getSystemHandle();
+}
+
+SWIFT::VECTOR2F SWIFT::WINDOW::IMPL::size() const
+{
+	auto s = m_window.getSize();
+	return SWIFT::VECTOR2F(float(s.x), float(s.y));
 }
 
 SWIFT::BACKEND_WINDOW& SWIFT::WINDOW::IMPL::window()
@@ -387,6 +394,11 @@ const wchar_t* SWIFT::WINDOW::title() const
 bool SWIFT::WINDOW::is_open() const
 {
 	return m_window && m_window->is_open();
+}
+
+SWIFT::VECTOR2F SWIFT::WINDOW::size() const
+{
+	return m_window->size();
 }
 
 SWIFT::INPUT& SWIFT::WINDOW::input() 

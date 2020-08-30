@@ -14,34 +14,20 @@ static void stop_running()
 
 int main()
 {
-    using SWIFT::console;
-
-    //Create window
-    SWIFT::WINDOW window;
-    window.title(L"This is not the title");
-    window.create_fullscreen();
-
-
     //Add basic console commands
-    console().add_console_command(L"exit", L"Exit the application.", &stop_running);
-    console().add_console_command(L"fullscreen", L"Make window fullscreen.", window, &SWIFT::WINDOW::create_fullscreen);
-    console().add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", window, &SWIFT::WINDOW::create_window);
+    SWIFT::console().add_console_command(L"exit", L"Exit the application.", &stop_running);
 
     //Create scene
-    SWIFT::RENDER_SCENE rscene;
-    SAMPLE_SCENE ss(rscene);
+    SAMPLE_SCENE ss;
 
-    std::wstring input;
     while (running())
     {
-        console().invoke_commands();
+        SWIFT::console().invoke_commands();
         ss.update();
-        window.update(std::move(rscene));
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(15ms);
     }
-    window.close_window();
 
     return 0;
 }
