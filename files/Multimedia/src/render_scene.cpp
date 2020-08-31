@@ -24,10 +24,14 @@ void SWIFT::RENDER_SCENE::draw(BACKEND_WINDOW& window)
     );
     
     //Draw the sorted vector in order
+    BACKEND_VERTEX_ARRAY vertices;
+    vertices.setPrimitiveType(sf::PrimitiveType::Quads);
     for (auto& object : m_objects)
     {
-        object->draw(window);
+        object->draw(vertices);
     }
+
+    window.draw(vertices);
 
     m_drawn = true;
 }

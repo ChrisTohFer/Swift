@@ -73,7 +73,7 @@ public:
             scene.instantiate(std::move(b));
         }
 
-        if (static_cast<float>(std::rand()) / RAND_MAX < (1.0f / 900000.f * scene.entity_count<void>()))    //1 in 300,000 chance multiplied by number of entities
+        if (static_cast<float>(std::rand()) / RAND_MAX < (1.0f / 900000.f * scene.entity_count<void>()))    //1 in 900,000 chance multiplied by number of entities
         {
             scene.destroy(entity.id());
         }
@@ -96,8 +96,8 @@ public:
     template<typename SCENE>
     void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE&, TRANSFORM& transform, RENDER_COMPONENT&)
     {
-        auto circle = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::CIRCLE(transform.position, 5.f));
-        scene.template service<SWIFT::RENDER_SERVICE>().add_object(std::move(circle));
+        auto rect = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::RECT(transform.position, SWIFT::VECTOR2F(10.f,10.f)));
+        scene.template service<SWIFT::RENDER_SERVICE>().add_object(std::move(rect));
     }
 };
 

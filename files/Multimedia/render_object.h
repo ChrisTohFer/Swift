@@ -4,13 +4,13 @@
 
 namespace SWIFT
 {
-    struct BACKEND_WINDOW;
+    struct BACKEND_VERTEX_ARRAY;
 
     struct RENDER_OBJECT
     {
         virtual ~RENDER_OBJECT() = default;
 
-        virtual void draw(BACKEND_WINDOW&) = 0;
+        virtual void draw(BACKEND_VERTEX_ARRAY&) = 0;
 
         int priority = 0;
     };
@@ -20,7 +20,7 @@ namespace SWIFT
         RECT(VECTOR2F const& pos, VECTOR2F const& size);
         virtual ~RECT() = default;
 
-        void draw(BACKEND_WINDOW&) override;
+        void draw(BACKEND_VERTEX_ARRAY&) override;
 
         VECTOR2F pos;
         VECTOR2F size;
@@ -31,7 +31,7 @@ namespace SWIFT
         CIRCLE(VECTOR2F const& pos, float const& radius);
         virtual ~CIRCLE() = default;
 
-        void draw(BACKEND_WINDOW&) override;
+        void draw(BACKEND_VERTEX_ARRAY&) override;
 
         VECTOR2F pos;
         float    radius;
