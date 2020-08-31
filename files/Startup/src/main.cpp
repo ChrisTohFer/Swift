@@ -22,11 +22,13 @@ int main()
 
     while (running())
     {
+        using namespace std::chrono_literals;
+        auto next_update_time = std::chrono::system_clock::now() + 15000us;
+
         SWIFT::console().invoke_commands();
         ss.update();
 
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(15ms);
+        std::this_thread::sleep_until(next_update_time);
     }
 
     return 0;

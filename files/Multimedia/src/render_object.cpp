@@ -15,9 +15,6 @@ SWIFT::RECT::RECT(VECTOR2F const& pos, VECTOR2F const& size)
 
 void SWIFT::RECT::draw(BACKEND_VERTEX_ARRAY& vertices)
 {
-    sf::RectangleShape rect(convert(size));
-    rect.setPosition(convert(pos));
-
     if (vertices.getPrimitiveType() == sf::PrimitiveType::Quads)
     {
         auto v1 = sf::Vertex(convert(pos));
@@ -36,10 +33,6 @@ SWIFT::CIRCLE::CIRCLE(VECTOR2F const& pos, float const& radius)
     : pos(pos), radius(radius)
 {}
 
-void SWIFT::CIRCLE::draw(BACKEND_VERTEX_ARRAY& vertices)
+void SWIFT::CIRCLE::draw(BACKEND_VERTEX_ARRAY&)
 {
-    sf::CircleShape circle;
-    circle.setRadius(radius);
-    circle.setPosition(convert(pos));
-    circle.setFillColor(sf::Color::Red);
 }
