@@ -23,6 +23,12 @@ namespace SWIFT::EC
             return std::get<index>(m_systems);
         }
         
+        template<typename SCENE>
+        void start(SCENE& scene)
+        {
+            (system<SYSTEMS>().start(scene), ...);
+        }
+
         template<typename SCENE, typename ...ENTITY_TYPES>
         void update(SCENE& scene, ENTITY_HOLDER<ENTITY_TYPES...>& entities)
         {

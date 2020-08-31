@@ -35,11 +35,20 @@ using BLANK = SWIFT::EC::ENTITY<TRANSFORM, VELOCITY, RENDER_COMPONENT>;
 class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, TRANSFORM, VELOCITY>
 {
     SWIFT::VECTOR2F bounds;
+    bool pressed = false;
 
 public:
     template<typename SCENE>
+    void start(SCENE&)
+    {
+
+    }
+    template<typename SCENE>
     void early_update(SCENE& scene)
     {
+        SWIFT::INPUT& input = scene.template service<SWIFT::WINDOW_SERVICE>().input();
+        pressed = input.key_pressed(SWIFT::KEY::Space);
+
         bounds = scene.template service<SWIFT::WINDOW_SERVICE>().size();
     }
     template<typename SCENE>
@@ -61,7 +70,8 @@ public:
         else if (transform.position.y > bounds.y)
             transform.position.y -= bounds.y + 10.f;
 
-        if (static_cast<float>(std::rand()) / RAND_MAX < 1.0f / 300.f)  //1 in 300 chance per frame = every 5 seconds or so
+
+        if (pressed or static_cast<float>(std::rand()) / RAND_MAX < 1.0f / 300.f)  //1 in 300 chance per frame = every 5 seconds or so
         {
             auto x_vel = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
             auto y_vel = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
@@ -84,6 +94,11 @@ class RENDERER : public SWIFT::EC::SYSTEM<RENDERER, TRANSFORM, RENDER_COMPONENT>
 {
 public:
     template<typename SCENE>
+    void start(SCENE&)
+    {
+
+    }
+    template<typename SCENE>
     void early_update(SCENE& scene)
     {
         scene.template service<SWIFT::RENDER_SERVICE>().clear_and_reserve(count());
@@ -103,9 +118,14 @@ public:
 
 //Containers
 
-using ENTITIES = SWIFT::EC::ENTITY_HOLDER<BLANK>;
-using SYSTEMS = SWIFT::EC::SYSTEM_HOLDER<MOVEMENT, RENDERER>;
-using SERVICES = SWIFT::EC::SERVICE_HOLDER<SWIFT::WINDOW_SERVICE, SWIFT::RENDER_SERVICE>;
+using ENTITIES = SWIFT::EC::ENTITY_HOLDER<
+    BLANK>;
+using SYSTEMS = SWIFT::EC::SYSTEM_HOLDER<
+    MOVEMENT,
+    RENDERER>;
+using SERVICES = SWIFT::EC::SERVICE_HOLDER<
+    SWIFT::WINDOW_SERVICE,
+    SWIFT::RENDER_SERVICE>;
 
 //Scene
 

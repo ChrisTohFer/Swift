@@ -16,6 +16,12 @@ namespace SWIFT::EC
         SERVICES m_service_holder;  //of type SERVICE_HOLDER
 
     public:
+        SCENE()
+        {
+            m_service_holder.start(*this);
+            m_system_holder.start(*this);
+        }
+
         //Systems + services
         void update()
         {

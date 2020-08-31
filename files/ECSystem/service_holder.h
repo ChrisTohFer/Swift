@@ -22,6 +22,12 @@ namespace SWIFT::EC
         }
 
         template<typename SCENE>
+        void start(SCENE& scene)
+        {
+            (service<SERVICES>().start(scene), ...);
+        }
+
+        template<typename SCENE>
         void update(SCENE& scene)
         {
             (service<SERVICES>().update(scene), ...);
