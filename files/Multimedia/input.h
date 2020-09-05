@@ -212,6 +212,8 @@ namespace SWIFT
         void listen_for_mouse(MOUSE_LISTENER&);
         void stop_listening_for_mouse(MOUSE_LISTENER&);
 
+        //Mouse
+        SWIFT::VECTOR2F mouse_position();
     private:
         MOUSE_STATE                       m_mouse_state;
         EVENT<MOUSE_EVENT>                m_mouse_event;
