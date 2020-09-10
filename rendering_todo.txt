@@ -1,0 +1,34 @@
+Things required for rendering:
+
+object side information:
+	Currently implementable:
+	-Transform (including position/scale/rotation)
+	-Offset (default puts center of image at transform position)
+	-Size (in engine units)
+	-Colour (including alpha)
+
+	Requires texture loading:
+	-Texture
+	-Texture application (repeating, offset, clamp) <- Possibly part of material? 
+	-Material <- Advanced, possibly not in first iteration
+
+render side information:
+	-Camera Position
+	-Camera Size (in engine units)
+	-Camera Rotation
+	-Camera Filters
+
+note that camera information could be made into a separate existance from the renderer in order to support multiple cameras
+alternatively the renderer may own the main camera and additional cameras render to textures
+
+process:
+	-Possibly account for texture offset/texture size
+	-Apply camera transformation to object transform - Convert from object transform to actual screen space
+	-Batch render all sprites
+
+dependency:
+	-currently the renderer is owned by the window, as it does not make much sense to exist separately
+	-current system may be outdated - it might make sense to define an interface and define implementation in a graphics library
+	-note that window does not need to be responsible for updates to renderer - it only needs to be able to stop the renderer in case the window closes
+	-Given previous points, should make a renderer_access base class which can be used to shut down the renderer and then assign the renderer to the window after it opens, to allow the renderer to be defined outside of multimedia
+	-Once renderer is outside of multimedia, it will be trivial to group together all graphics implementation into one project
