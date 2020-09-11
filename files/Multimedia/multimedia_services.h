@@ -1,7 +1,6 @@
 #pragma once
 
 #include "window.h"
-#include "render_scene.h"
 
 #include "Console/console.h"
 
@@ -22,10 +21,10 @@ namespace SWIFT
             console().add_console_command(L"fullscreen", L"Make window fullscreen.", m_window, &SWIFT::WINDOW::create_fullscreen);
             console().add_console_command(L"window", L"Takes width and height as integers and creates a window of that size.", m_window, &SWIFT::WINDOW::create_window);
         }
-
-        void update_window(SWIFT::RENDER_SCENE&& rscene)
+        ~WINDOW_SERVICE()
         {
-            m_window.update(std::move(rscene));
+            console().remove_console_command(L"fullscreen");
+            console().remove_console_command(L"window");
         }
 
         template<typename SCENE>
@@ -37,7 +36,13 @@ namespace SWIFT
         template<typename SCENE>
         void update(SCENE&)
         {
+            m_window.update();
+        }
 
+        //Actions
+        void add_renderer(RENDER_INTERFACE& renderer)
+        {
+            m_window.add_renderer(renderer);
         }
 
         //Queries
@@ -48,33 +53,6 @@ namespace SWIFT
         INPUT& input()
         {
             return m_window.input();
-        }
-    };
-
-    class RENDER_SERVICE
-    {
-        SWIFT::RENDER_SCENE m_render_scene;
-
-    public:
-        void clear_and_reserve(size_t capacity)
-        {
-            m_render_scene.clear_and_reserve(capacity);
-        }
-        void add_object(UP_RENDER_OBJECT&& obj)
-        {
-            m_render_scene.add_object(std::move(obj));
-        }
-        
-        template<typename SCENE>
-        void start(SCENE&)
-        {
-
-        }
-
-        template<typename SCENE>
-        void update(SCENE& scene)
-        {
-            scene.template service<WINDOW_SERVICE>().update_window(std::move(m_render_scene));
         }
     };
 }

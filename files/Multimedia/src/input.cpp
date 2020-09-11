@@ -95,5 +95,5 @@ void SWIFT::INPUT::stop_listening_for_mouse(MOUSE_LISTENER& listener)
 
 SWIFT::VECTOR2F SWIFT::INPUT::mouse_position()
 {
-    return SWIFT::VECTOR2F(m_mouse_state.posX, m_mouse_state.posY);
+    return SWIFT::VECTOR2F(float(m_mouse_state.posX), float(m_mouse_state.posY));
 }

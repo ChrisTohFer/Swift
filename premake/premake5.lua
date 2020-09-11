@@ -76,6 +76,7 @@ workspace "SwiftEngine"
 	generate_project("FileIO", "StaticLib")
 	generate_project("ECSystem", "StaticLib")
 	generate_project("Multimedia", "StaticLib")
+	generate_project("Graphics", "StaticLib")
 	
 	group			""
 	generate_project("Startup", "ConsoleApp")

@@ -1,5 +1,4 @@
 #include "render_scene.h"
-#include "internal_types.h"
 #include "SFML/Graphics.hpp"
 
 void SWIFT::RENDER_SCENE::add_object(UP_RENDER_OBJECT&& ptr)
@@ -13,7 +12,7 @@ void SWIFT::RENDER_SCENE::clear_and_reserve(size_t capacity)
     m_objects.reserve(capacity);
 }
 
-void SWIFT::RENDER_SCENE::draw(BACKEND_WINDOW& window)
+void SWIFT::RENDER_SCENE::draw(sf::RenderWindow& window)
 {
     //Sort vector
     std::sort(m_objects.begin(), m_objects.end(),
@@ -24,7 +23,7 @@ void SWIFT::RENDER_SCENE::draw(BACKEND_WINDOW& window)
     );
     
     //Draw the sorted vector in order
-    BACKEND_VERTEX_ARRAY vertices;
+    sf::VertexArray vertices;
     vertices.setPrimitiveType(sf::PrimitiveType::Quads);
     for (auto& object : m_objects)
     {

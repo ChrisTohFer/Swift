@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "render_interface.h"
 #include "input.h"
 
 #include "Types/vector.h"
@@ -19,7 +19,10 @@ namespace SWIFT
 		void create_window(int, int);
 		void create_fullscreen();
 		void close_window();
-		void update(RENDER_SCENE&&);
+		void update();
+
+		void add_renderer(RENDER_INTERFACE&);
+		void remove_renderer();
 
 		const wchar_t* title() const;
 		bool is_open() const;
@@ -29,7 +32,7 @@ namespace SWIFT
 	private:
 		void create_impl(const wchar_t*, bool, int, int, int, int);
 
-		RENDERER			  m_renderer;
+		RENDER_INTERFACE*     m_renderer = nullptr;
 		INPUT                 m_input;
 		KEY_ARRAY<KEY_UPDATE> m_key_updates;
 		MOUSE_UPDATE	      m_mouse_updates;

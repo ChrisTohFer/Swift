@@ -1,5 +1,5 @@
 #include "render_object.h"
-#include "internal_types.h"
+#include "SFML/Graphics.hpp"
 
 namespace
 {
@@ -13,7 +13,7 @@ SWIFT::RECT::RECT(VECTOR2F const& pos, VECTOR2F const& size)
     : pos(pos), size(size)
 {}
 
-void SWIFT::RECT::draw(BACKEND_VERTEX_ARRAY& vertices)
+void SWIFT::RECT::draw(sf::VertexArray& vertices)
 {
     if (vertices.getPrimitiveType() == sf::PrimitiveType::Quads)
     {
@@ -33,6 +33,6 @@ SWIFT::CIRCLE::CIRCLE(VECTOR2F const& pos, float const& radius)
     : pos(pos), radius(radius)
 {}
 
-void SWIFT::CIRCLE::draw(BACKEND_VERTEX_ARRAY&)
+void SWIFT::CIRCLE::draw(sf::VertexArray&)
 {
 }

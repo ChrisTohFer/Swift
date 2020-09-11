@@ -4,10 +4,13 @@
 #include <memory>
 #include <vector>
 
+namespace sf
+{
+    class RenderWindow;
+}
+
 namespace SWIFT
 {
-    struct BACKEND_WINDOW;
-    
     using UP_RENDER_OBJECT = std::unique_ptr<RENDER_OBJECT>;
 
     class RENDER_SCENE
@@ -18,7 +21,7 @@ namespace SWIFT
         void add_object(UP_RENDER_OBJECT&&);
         void clear_and_reserve(size_t);
 
-        void draw(BACKEND_WINDOW&);
+        void draw(sf::RenderWindow&);
         bool drawn() const;
 
     private:

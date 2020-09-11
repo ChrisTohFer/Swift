@@ -204,7 +204,7 @@ void SWIFT::WINDOW::IMPL::handle_resized(sf::Event const& event)
 
 void SWIFT::WINDOW::IMPL::handle_key_pressed(sf::Event const& event)
 {
-	m_input_mutex.lock();
+ 	m_input_mutex.lock();
 
 	auto key = convert_key(event.key.code);
 	if (key == SWIFT::KEY::Unknown)
@@ -363,7 +363,8 @@ void SWIFT::WINDOW::create_fullscreen()
 
 void SWIFT::WINDOW::close_window()
 {
-	m_renderer.stop();	//Must stop rendering before we destroy the window
+	if (m_renderer)
+		m_renderer->remove_parent_window(); //Must stop rendering before we destroy the window
 
 	delete m_window;
 	m_window = nullptr;
@@ -371,10 +372,8 @@ void SWIFT::WINDOW::close_window()
 	m_ready_to_close = false;
 }
 
-void SWIFT::WINDOW::update(RENDER_SCENE&& scene)
+void SWIFT::WINDOW::update()
 {
-	m_renderer.update_scene(std::move(scene));
-
 	if (m_window)
 	{
 		m_window->lock_input_mutex();
@@ -384,6 +383,25 @@ void SWIFT::WINDOW::update(RENDER_SCENE&& scene)
 
 	if (m_ready_to_close)
 		close_window();
+}
+
+void SWIFT::WINDOW::add_renderer(RENDER_INTERFACE& renderer)
+{
+	if (m_renderer)
+		m_renderer->remove_parent_window();
+
+	if(m_window)
+		renderer.add_parent_window(m_window->window());
+
+	m_renderer = &renderer;
+}
+
+void SWIFT::WINDOW::remove_renderer()
+{
+	if (m_renderer)
+		m_renderer->remove_parent_window();
+
+	m_renderer = nullptr;
 }
 
 const wchar_t* SWIFT::WINDOW::title() const
@@ -398,7 +416,10 @@ bool SWIFT::WINDOW::is_open() const
 
 SWIFT::VECTOR2F SWIFT::WINDOW::size() const
 {
-	return m_window->size();
+	if (m_window)
+		return m_window->size();
+	else
+		return SWIFT::VECTOR2F::zero();
 }
 
 SWIFT::INPUT& SWIFT::WINDOW::input() 
@@ -409,5 +430,7 @@ SWIFT::INPUT& SWIFT::WINDOW::input()
 void SWIFT::WINDOW::create_impl(const wchar_t* title, bool borderless, int x, int y, int width, int height)
 {
 	m_window = new IMPL(*this , title, borderless, x, y, width, height);
-	m_renderer.begin(m_window->window());
+
+	if (m_renderer)
+		m_renderer->add_parent_window(m_window->window());
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Graphics/graphics_services.h"
 #include "ECSystem/scene.h"
 #include "Multimedia/multimedia_services.h"
 #include "Types/vector.h"

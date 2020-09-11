@@ -1,5 +1,4 @@
 #include "renderer.h"
-#include "internal_types.h"
 
 #include "GlobalHeaders/timing.h"
 
@@ -12,7 +11,7 @@
 class SWIFT::RENDERER::IMPL
 {
 public:
-	IMPL(BACKEND_WINDOW& window);
+	IMPL(sf::RenderWindow& window);
 	~IMPL();
 
 	void update_scene(RENDER_SCENE&&);
@@ -23,13 +22,13 @@ private:
 	std::thread       m_thread;
 	std::mutex        m_mutex;
 	bool              m_running = true;
-	BACKEND_WINDOW&   m_window;
+	sf::RenderWindow& m_window;
 	RENDER_SCENE	  m_scene;
 };
 
 // RENDERER::IMPL //
 
-SWIFT::RENDERER::IMPL::IMPL(BACKEND_WINDOW& window)
+SWIFT::RENDERER::IMPL::IMPL(sf::RenderWindow& window)
 	: m_window(window)
 {
 	m_thread = std::thread(&RENDERER::IMPL::render_loop, this);
@@ -93,15 +92,15 @@ void SWIFT::RENDERER::IMPL::render_loop()
 
 SWIFT::RENDERER::~RENDERER()
 {
-	stop();
+	remove_parent_window();
 }
 
-void SWIFT::RENDERER::begin(BACKEND_WINDOW& window)
+void SWIFT::RENDERER::add_parent_window(sf::RenderWindow& window)
 {
 	m_impl = new IMPL(window);
 }
 
-void SWIFT::RENDERER::stop()
+void SWIFT::RENDERER::remove_parent_window()
 {
 	delete m_impl;
 	m_impl = nullptr;
