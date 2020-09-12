@@ -14,11 +14,11 @@ SWIFT::MATRIX3X3 SWIFT::TRANSFORM::matrix() const
         sinf(rotation), cosf(rotation), 0.f,
         0.f, 0.f, 1.f
     );
-    MATRIX3X3 translate_back(
+    MATRIX3X3 apply_translation(
         1.f, 0.f, position.x,
         0.f, 1.f, position.y,
         0.f, 0.f, 1.f
     );
     
-    return (translate_back * (apply_rotation * apply_scale));
+    return (apply_translation * (apply_rotation * apply_scale));
 }

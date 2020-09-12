@@ -22,12 +22,16 @@ void SWIFT::RENDER_SCENE::draw(sf::RenderWindow& window)
         }
     );
     
+    auto camera_transform_matrix = m_main_camera->matrix();
+
     //Draw the sorted vector in order
     sf::VertexArray vertices;
+    vertices.resize(m_objects.size() * 4);
     vertices.setPrimitiveType(sf::PrimitiveType::Quads);
-    for (auto& object : m_objects)
+    for (int i = 0; i < int(m_objects.size()); ++i)
     {
-        object->draw(vertices);
+        auto& object = m_objects[i];
+        object->draw(vertices, i * 4, camera_transform_matrix);
     }
 
     window.draw(vertices);
@@ -38,4 +42,14 @@ void SWIFT::RENDER_SCENE::draw(sf::RenderWindow& window)
 bool SWIFT::RENDER_SCENE::drawn() const
 {
     return m_drawn;
+}
+
+const SWIFT::CAMERA* SWIFT::RENDER_SCENE::camera() const
+{
+    return m_main_camera;
+}
+
+void SWIFT::RENDER_SCENE::camera(CAMERA const& camera)
+{
+    m_main_camera = &camera;
 }

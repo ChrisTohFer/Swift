@@ -128,6 +128,9 @@ void SWIFT::WINDOW::IMPL::window_loop(const wchar_t* title, bool borderless, int
 {
 	m_window.create(sf::VideoMode(width, height), title, borderless ? sf::Style::None : sf::Style::Default);
 
+	//View always 1.f by 1.f centered on origin
+	m_window.setView(sf::View(sf::FloatRect(-0.5f, -0.5f, 1.f, 1.f)));
+
 	//Only offset if we're in borderless fullscreen
 	if (borderless)
 		m_window.setPosition(sf::Vector2i(x, y));
@@ -196,10 +199,6 @@ void SWIFT::WINDOW::IMPL::handle_closed()
 
 void SWIFT::WINDOW::IMPL::handle_resized(sf::Event const& event)
 {
-	auto newWidth = static_cast<float>(event.size.width);
-	auto newHeight = static_cast<float>(event.size.height);
-
-	m_window.setView(sf::View(sf::FloatRect(0, 0, newWidth, newHeight)));
 }
 
 void SWIFT::WINDOW::IMPL::handle_key_pressed(sf::Event const& event)

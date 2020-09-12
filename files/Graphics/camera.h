@@ -18,11 +18,13 @@ namespace SWIFT
         float aspect_ratio() const;
         float height()       const;
         float width()        const;
+        float rotation()     const;
 
         void position(VECTOR2F const&);
         void aspect_ratio(float);
         void height(float);
         void width(float);
+        void rotation(float);
 
         MATRIX3X3 matrix()   const;
     };

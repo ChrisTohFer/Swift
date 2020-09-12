@@ -1,6 +1,7 @@
 #pragma once
 
 #include "render_object.h"
+#include "camera.h"
 #include <memory>
 #include <vector>
 
@@ -24,7 +25,11 @@ namespace SWIFT
         void draw(sf::RenderWindow&);
         bool drawn() const;
 
+        const CAMERA* camera() const;
+        void camera(CAMERA const&);
+
     private:
+        const CAMERA*       m_main_camera;
         RENDER_VECTOR m_objects;
         bool          m_drawn = false;
     };

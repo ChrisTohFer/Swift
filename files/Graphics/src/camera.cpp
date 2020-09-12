@@ -27,6 +27,11 @@ float SWIFT::CAMERA::width() const
     return m_size.x;
 }
 
+float SWIFT::CAMERA::rotation() const
+{
+    return m_rotation;
+}
+
 void SWIFT::CAMERA::position(VECTOR2F const& pos)
 {
     m_position = pos;
@@ -48,6 +53,11 @@ void SWIFT::CAMERA::width(float width)
 {
     m_size.x = width;
     m_size.y = width / m_aspect_ratio;
+}
+
+void SWIFT::CAMERA::rotation(float rotation)
+{
+    m_rotation = rotation;
 }
 
 SWIFT::MATRIX3X3 SWIFT::CAMERA::matrix() const

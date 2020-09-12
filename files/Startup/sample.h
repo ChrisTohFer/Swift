@@ -4,6 +4,7 @@
 #include "ECSystem/scene.h"
 #include "Multimedia/multimedia_services.h"
 #include "Types/vector.h"
+#include "Types/transform.h"
 
 #include <random>
 #include <vector>
@@ -11,11 +12,6 @@
 //Services
 
 //Components
-
-struct TRANSFORM
-{
-    SWIFT::VECTOR2F position;
-};
 
 struct VELOCITY
 {
@@ -29,11 +25,11 @@ struct RENDER_COMPONENT
 
 //Entities
 
-using BLANK = SWIFT::EC::ENTITY<TRANSFORM, VELOCITY, RENDER_COMPONENT>;
+using BLANK = SWIFT::EC::ENTITY<SWIFT::TRANSFORM, VELOCITY, RENDER_COMPONENT>;
 
 //Systems
 
-class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, TRANSFORM, VELOCITY>
+class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, SWIFT::TRANSFORM, VELOCITY>
 {
     SWIFT::VECTOR2F bounds;
     bool pressed = false;
@@ -58,7 +54,7 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, TRANSFORM& transform, VELOCITY& velocity)
+    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, SWIFT::TRANSFORM& transform, VELOCITY& velocity)
     {
         transform.position += velocity.velocity;
 
@@ -79,7 +75,8 @@ public:
             velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 0.5f;
 
             BLANK b;
-            b.component<TRANSFORM>() = transform;
+            auto& t = b.component<SWIFT::TRANSFORM>() = transform;
+            t.rotation += 0.1f;
             b.component<VELOCITY>().velocity = -velocity.velocity;
             scene.instantiate(std::move(b));
         }
@@ -91,7 +88,7 @@ public:
     }
 };
 
-class RENDERER : public SWIFT::EC::SYSTEM<RENDERER, TRANSFORM, RENDER_COMPONENT>
+class RENDERER : public SWIFT::EC::SYSTEM<RENDERER, SWIFT::TRANSFORM, RENDER_COMPONENT>
 {
 public:
     template<typename SCENE>
@@ -110,9 +107,9 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE&, TRANSFORM& transform, RENDER_COMPONENT&)
+    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM& transform, RENDER_COMPONENT&)
     {
-        auto rect = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::RECT(transform.position, SWIFT::VECTOR2F(10.f,10.f)));
+        auto rect = std::unique_ptr<SWIFT::RENDER_OBJECT>(new SWIFT::RECT(transform, SWIFT::VECTOR2F(10.f,10.f)));
         scene.template service<SWIFT::RENDER_SERVICE>().add_object(std::move(rect));
     }
 };
@@ -126,6 +123,7 @@ using SYSTEMS = SWIFT::EC::SYSTEM_HOLDER<
     RENDERER>;
 using SERVICES = SWIFT::EC::SERVICE_HOLDER<
     SWIFT::WINDOW_SERVICE,
+    SWIFT::MAIN_CAMERA,
     SWIFT::RENDER_SERVICE>;
 
 //Scene
@@ -136,7 +134,10 @@ public:
     SAMPLE_SCENE()
     {
         BLANK b;
-        b.component<TRANSFORM>().position = SWIFT::VECTOR2F(500.f, 500.f);
+        auto& t = b.component<SWIFT::TRANSFORM>();
+        t.position = SWIFT::VECTOR2F(500.f, 500.f);
+        t.rotation = 0.2f;
+        t.scale.x = 1.5f;
         instantiate(std::move(b));
     }
 };

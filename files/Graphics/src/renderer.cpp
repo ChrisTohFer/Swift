@@ -49,24 +49,10 @@ void SWIFT::RENDERER::IMPL::update_scene(RENDER_SCENE&& scene)
 
 void SWIFT::RENDERER::IMPL::render_loop()
 {
-	//temporary
-	sf::Font font;
-	font.loadFromFile("../../resources/fonts/arial.ttf");
-	sf::Text cycle_time_text;
-	cycle_time_text.setFont(font);
-	cycle_time_text.setFillColor(sf::Color::White);
-	cycle_time_text.setCharacterSize(20);
-	//~temporary
-
 	CYCLE_TIMER timer(100);
 	while (m_running)
 	{
 		timer.cycle();
-
-		//temporary
-		auto temp = std::to_string(timer.average_cycle_time());
-		cycle_time_text.setString(temp);
-		//~temporary
 
 		m_window.clear(sf::Color::Black);
 		{
@@ -74,7 +60,6 @@ void SWIFT::RENDERER::IMPL::render_loop()
 			m_scene.draw(m_window);	//Scene is protected by mutex as it is provided by main thread
 			m_mutex.unlock();
 		}
-		m_window.draw(cycle_time_text);
 		m_window.display();
 
 		//If we've drawn the scene already then wait

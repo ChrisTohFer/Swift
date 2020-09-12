@@ -1,4 +1,5 @@
 #include "render_object.h"
+
 #include "SFML/Graphics.hpp"
 
 namespace
@@ -7,32 +8,32 @@ namespace
     {
         return sf::Vector2f(vec.x, vec.y);
     }
-}
-
-SWIFT::RECT::RECT(VECTOR2F const& pos, VECTOR2F const& size)
-    : pos(pos), size(size)
-{}
-
-void SWIFT::RECT::draw(sf::VertexArray& vertices)
-{
-    if (vertices.getPrimitiveType() == sf::PrimitiveType::Quads)
+    sf::Vector2f convert(SWIFT::VECTOR3F vec)
     {
-        auto v1 = sf::Vertex(convert(pos));
-        auto v2 = sf::Vertex(sf::Vector2(pos.x + 10.f, pos.y));
-        auto v3 = sf::Vertex(sf::Vector2(pos.x + 10.f, pos.y + 10.f));
-        auto v4 = sf::Vertex(sf::Vector2(pos.x, pos.y + 10.f));
-        
-        vertices.append(v1);
-        vertices.append(v2);
-        vertices.append(v3);
-        vertices.append(v4);
+        return sf::Vector2f(vec.x, vec.y);
     }
 }
 
-SWIFT::CIRCLE::CIRCLE(VECTOR2F const& pos, float const& radius)
-    : pos(pos), radius(radius)
+SWIFT::RENDER_OBJECT::RENDER_OBJECT(TRANSFORM const& t)
+    : transform(t)
+{
+}
+
+SWIFT::RECT::RECT(TRANSFORM const& t, VECTOR2F const& size)
+    : RENDER_OBJECT(t), size(size)
 {}
 
-void SWIFT::CIRCLE::draw(sf::VertexArray&)
+void SWIFT::RECT::draw(sf::VertexArray& vertices, int index, MATRIX3X3 const& camera_transform_matrix)
 {
+    auto complete_transform = camera_transform_matrix * transform.matrix();
+
+    auto p1 = complete_transform * SWIFT::VECTOR3F(-size.x / 2.f, -size.y / 2.f, 1.f);
+    auto p2 = complete_transform * SWIFT::VECTOR3F(size.x / 2.f, -size.y / 2.f, 1.f);
+    auto p3 = complete_transform * SWIFT::VECTOR3F(size.x / 2.f, size.y / 2.f, 1.f);
+    auto p4 = complete_transform * SWIFT::VECTOR3F(-size.x / 2.f, size.y / 2.f, 1.f);
+
+    vertices[index    ].position = convert(p1);
+    vertices[index + 1].position = convert(p2);
+    vertices[index + 2].position = convert(p3);
+    vertices[index + 3].position = convert(p4);
 }
