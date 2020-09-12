@@ -197,7 +197,7 @@ void SWIFT::WINDOW::IMPL::handle_closed()
 	m_parent.m_ready_to_close = true;
 }
 
-void SWIFT::WINDOW::IMPL::handle_resized(sf::Event const& event)
+void SWIFT::WINDOW::IMPL::handle_resized(sf::Event const&)
 {
 }
 
