@@ -2,6 +2,7 @@
 
 #include "Types/vector.h"
 #include "Types/transform.h"
+#include "Types/colour.h"
 
 //Forward declaration
 namespace sf
@@ -22,14 +23,16 @@ namespace SWIFT
         int       priority = 0;
     };
 
-    struct RECT : public RENDER_OBJECT
+    struct SPRITE : public RENDER_OBJECT
     {
-        RECT(TRANSFORM const& transform, VECTOR2F const& size);
-        virtual ~RECT() = default;
+        SPRITE(TRANSFORM const& transform, VECTOR2F const& size, VECTOR2F const& pivot, COLOUR colour);
+        virtual ~SPRITE() = default;
 
         void draw(sf::VertexArray&, int index, MATRIX3X3 const& camera_transform_matrix) override;
 
         VECTOR2F size;
+        VECTOR2F pivot = VECTOR2F(0.5f, 0.5f); //As a fraction of size
+        COLOUR   colour = COLOURS::white;
     };
 
 }

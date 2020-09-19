@@ -3,7 +3,9 @@
 #include "render_scene.h"
 #include "renderer.h"
 #include "camera.h"
+#include "graphics_components.h"
 
+#include "ECSystem/system.h"
 #include "Multimedia/multimedia_services.h"
 
 namespace SWIFT
@@ -39,12 +41,11 @@ namespace SWIFT
         }
     };
 
-    class RENDER_SERVICE
+    class RENDER_SYSTEM : public SWIFT::EC::SYSTEM<RENDER_SYSTEM, TRANSFORM, SPRITE_COMPONENT>
     {
         SWIFT::RENDERER     m_renderer;
         SWIFT::RENDER_SCENE m_render_scene;
 
-    public:
         void clear_and_reserve(size_t capacity)
         {
             m_render_scene.clear_and_reserve(capacity);
@@ -54,6 +55,7 @@ namespace SWIFT
             m_render_scene.add_object(std::move(obj));
         }
 
+    public:
         template<typename SCENE>
         void start(SCENE& scene)
         {
@@ -63,11 +65,20 @@ namespace SWIFT
             MAIN_CAMERA& camera = scene.template service<MAIN_CAMERA>();
             m_render_scene.camera(camera.camera());
         }
-
         template<typename SCENE>
-        void update(SCENE&)
+        void early_update(SCENE&)
+        {
+            clear_and_reserve(count());
+        }
+        template<typename SCENE>
+        void late_update(SCENE&)
         {
             m_renderer.update_scene(std::move(m_render_scene));
+        }
+        template<typename SCENE>
+        void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM& transform, SPRITE_COMPONENT& sprite)
+        {
+            add_object(sprite.create_object(transform));
         }
     };
 }
