@@ -6,7 +6,7 @@ template<typename ... COMPONENTS>
 template<typename REQUIRED_COMPONENT>
 constexpr bool SWIFT::EC::ENTITY<COMPONENTS...>::has_component()
 {
-    return (std::is_same<REQUIRED_COMPONENT, COMPONENTS>::value || ...);
+    return (std::is_base_of<REQUIRED_COMPONENT, COMPONENTS>::value || ...);
 }
 
 template<typename ... COMPONENTS>
@@ -22,7 +22,7 @@ COMPONENT& SWIFT::EC::ENTITY<COMPONENTS...>::component()
 {
     static_assert(ENTITY::has_component<COMPONENT>());
 
-    constexpr auto index = VARIADIC_INDEX<COMPONENT, COMPONENTS...>::index;
+    constexpr auto index = VARIADIC_POLYMORPHIC_INDEX<COMPONENT, COMPONENTS...>::index;
     return std::get<index>(m_components);
 }
 
@@ -33,7 +33,7 @@ const COMPONENT& SWIFT::EC::ENTITY<COMPONENTS...>::component() const
     //If this assert fails, we are trying to access a component in an entity that doesn't contain it
     static_assert(ENTITY::has_component<COMPONENT>());
 
-    constexpr auto index = VARIADIC_INDEX<COMPONENT, COMPONENTS...>::index;
+    constexpr auto index = VARIADIC_POLYMORPHIC_INDEX<COMPONENT, COMPONENTS...>::index;
     return std::get<index>(m_components);
 }
 

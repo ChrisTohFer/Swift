@@ -41,7 +41,7 @@ namespace SWIFT
         }
     };
 
-    class RENDER_SYSTEM : public SWIFT::EC::SYSTEM<RENDER_SYSTEM, TRANSFORM, SPRITE_COMPONENT>
+    class RENDER_SYSTEM : public SWIFT::EC::SYSTEM<RENDER_SYSTEM, TRANSFORM, RENDER_COMPONENT>
     {
         SWIFT::RENDERER     m_renderer;
         SWIFT::RENDER_SCENE m_render_scene;
@@ -76,7 +76,7 @@ namespace SWIFT
             m_renderer.update_scene(std::move(m_render_scene));
         }
         template<typename SCENE>
-        void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM& transform, SPRITE_COMPONENT& sprite)
+        void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM& transform, RENDER_COMPONENT& sprite)
         {
             add_object(sprite.create_object(transform));
         }
