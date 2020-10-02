@@ -47,7 +47,6 @@ namespace SWIFT
                 samples = m_durations_size;
 
             long long total = 0;
-            if(samples )
             for (auto i = 0; i < m_durations_size; ++i)
             {
                 //We're stepping back one cycle with each iteration and loop round if we reach the start of the array
