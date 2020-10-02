@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Graphics/graphics_services.h"
+#include "Physics/physics_components.h"
+#include "Physics/physics_services.h"
 #include "ECSystem/scene.h"
 #include "Multimedia/multimedia_services.h"
 #include "Types/vector.h"
@@ -25,11 +27,11 @@ struct VELOCITY
 
 //Entities
 
-using BLANK = SWIFT::EC::ENTITY<SWIFT::TRANSFORM, VELOCITY, SWIFT::SPRITE_COMPONENT>;
+using BLANK = SWIFT::EC::ENTITY<SWIFT::TRANSFORM, SWIFT::MOMENTUM, SWIFT::SPRITE_COMPONENT>;
 
 //Systems
 
-class MOVEMENT : public SWIFT::EC::SYSTEM<MOVEMENT, SWIFT::TRANSFORM, VELOCITY>
+class SCRIPT : public SWIFT::EC::SYSTEM<SCRIPT, SWIFT::TRANSFORM, SWIFT::MOMENTUM>
 {
     SWIFT::VECTOR2F bounds;
     bool pressed = false;
@@ -54,10 +56,8 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, SWIFT::TRANSFORM& transform, VELOCITY& velocity)
+    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, SWIFT::TRANSFORM& transform, SWIFT::MOMENTUM& velocity)
     {
-        transform.position += velocity.velocity;
-
         if (transform.position.x < -10.f)
             transform.position.x += bounds.x + 10.f;
         else if (transform.position.x > bounds.x)
@@ -70,14 +70,19 @@ public:
 
         if (pressed or random() < 1.0f / 300.f)  //1 in 300 chance per frame = every 5 seconds or so
         {
-            auto x_vel = random() - 0.5f;
-            auto y_vel = random() - 0.5f;
-            velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 0.5f;
+            auto x_vel   = random() - 0.5f;
+            auto y_vel   = random() - 0.5f;
+            auto rot_vel = (random() - 0.5f) * 2.f;
+            velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 100;
+            velocity.angular_velocity = rot_vel;
 
             BLANK b;
             auto& t = b.component<SWIFT::TRANSFORM>() = transform;
             t.rotation += 0.1f;
-            b.component<VELOCITY>().velocity = -velocity.velocity;
+            auto& momentum = b.component<SWIFT::MOMENTUM>();
+            momentum.velocity = -velocity.velocity;
+            momentum.angular_velocity = -rot_vel;
+
             auto& sprite = b.component<SWIFT::SPRITE_COMPONENT>();
             sprite.size = SWIFT::VECTOR2F(10.f, 10.f);
             auto colour_rand = random();
@@ -109,7 +114,8 @@ public:
 using ENTITIES = SWIFT::EC::ENTITY_HOLDER<
     BLANK>;
 using SYSTEMS = SWIFT::EC::SYSTEM_HOLDER<
-    MOVEMENT,
+    SCRIPT,
+    SWIFT::MOVEMENT,
     SWIFT::RENDER_SYSTEM>;
 using SERVICES = SWIFT::EC::SERVICE_HOLDER<
     SWIFT::WINDOW_SERVICE,

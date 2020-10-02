@@ -71,6 +71,21 @@ namespace SWIFT {
 		TYPE x = 0;
 		TYPE y = 0;
 	};
+	template<typename TYPE>
+	VECTOR2<TYPE> operator+(TYPE value, VECTOR2<TYPE> vector)
+	{
+		return vector + value;
+	}
+	template<typename TYPE>
+	VECTOR2<TYPE> operator-(TYPE value, VECTOR2<TYPE> vector)
+	{
+		return vector - value;
+	}
+	template<typename TYPE>
+	VECTOR2<TYPE> operator*(TYPE value, VECTOR2<TYPE> vector)
+	{
+		return vector * value;
+	}
 
 	//typenames for common use cases
 	using VECTOR3F = VECTOR3<float>;

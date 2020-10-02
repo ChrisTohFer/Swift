@@ -13,7 +13,7 @@ namespace SWIFT
     class MAIN_CAMERA
     {
         CAMERA m_camera;
-        WINDOW_SERVICE* window_service;
+        WINDOW_SERVICE* window_service = nullptr;
 
     public:
         CAMERA& camera()
@@ -26,6 +26,7 @@ namespace SWIFT
         {
             window_service = &(scene.template service<WINDOW_SERVICE>());
             auto window_size = window_service->size();
+            m_camera.position(window_size / 2.f);
             m_camera.aspect_ratio(window_size.x / window_size.y);
             m_camera.height(window_size.y);
         }
@@ -37,7 +38,6 @@ namespace SWIFT
             m_camera.position(window_size / 2.f);
             m_camera.aspect_ratio(window_size.x / window_size.y);
             m_camera.height(window_size.y);
-            m_camera.rotation(m_camera.rotation() + 0.01f);
         }
     };
 

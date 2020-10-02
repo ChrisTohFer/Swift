@@ -3,6 +3,7 @@
 #include "entity_holder.h"
 #include "system_holder.h"
 #include "service_holder.h"
+#include "GlobalHeaders/timing.h"
 
 namespace SWIFT::EC
 {
@@ -11,12 +12,17 @@ namespace SWIFT::EC
     class SCENE
     {
     protected:
-        ENTITIES m_entity_holder;   //of type ENTITY_HOLDER
-        SYSTEMS  m_system_holder;   //of type SYSTEM_HOLDER
-        SERVICES m_service_holder;  //of type SERVICE_HOLDER
+        ENTITIES    m_entity_holder;       //of type ENTITY_HOLDER
+        SYSTEMS     m_system_holder;       //of type SYSTEM_HOLDER
+        SERVICES    m_service_holder;      //of type SERVICE_HOLDER
+        
+        float       m_timestep      = 1 / 60.f; //intended length of update in seconds
+        float       m_last_timestep = 1 / 60.f; //actual length of previous update in seconds
+        CYCLE_TIMER m_update_timer;
 
     public:
         SCENE()
+            : m_update_timer(1)
         {
             m_service_holder.start(*this);
             m_system_holder.start(*this);
@@ -25,6 +31,9 @@ namespace SWIFT::EC
         //Systems + services
         void update()
         {
+            m_update_timer.cycle();
+            m_last_timestep = m_update_timer.previous_cycle_time() / 1000000.f; //Convert microseconds to seconds
+
             m_service_holder.update(*this);
             m_entity_holder.update();
             m_system_holder.update(*this, m_entity_holder);
@@ -74,6 +83,19 @@ namespace SWIFT::EC
             return m_entity_holder.count<ENTITY_TYPE>();
         }
 
+        //Settings
+        float timestep()
+        {
+            return m_timestep;
+        }
+        float timestep(float new_timestep)
+        {
+            return m_timestep = new_timestep;
+        }
+        float last_timestep()
+        {
+            return m_last_timestep;
+        }
     };
 
 }

@@ -67,16 +67,17 @@ workspace "SwiftEngine"
 	
 	--Projects--
 	group			"0. Base Projects"
-	generate_project("Console", "StaticLib")
+	generate_project("Console",       "StaticLib")
 	generate_project("GlobalHeaders", "StaticLib")
-	generate_project("Platform", "StaticLib")
-	generate_project("Types", "StaticLib")
+	generate_project("Platform",      "StaticLib")
+	generate_project("Types",         "StaticLib")
 	
 	group           "1. Core Projects"
-	generate_project("FileIO", "StaticLib")
-	generate_project("ECSystem", "StaticLib")
-	generate_project("Multimedia", "StaticLib")
-	generate_project("Graphics", "StaticLib")
+	generate_project("FileIO",        "StaticLib")
+	generate_project("ECSystem",      "StaticLib")
+	generate_project("Multimedia",    "StaticLib")
+	generate_project("Graphics",      "StaticLib")
+	generate_project("Physics",       "StaticLib")
 	
 	group			""
 	generate_project("Startup", "ConsoleApp")

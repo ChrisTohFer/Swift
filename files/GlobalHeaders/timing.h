@@ -42,6 +42,10 @@ namespace SWIFT
 
             return total / m_durations_size;
         }
+        int previous_cycle_time()
+        {
+            return m_durations[m_index];    //Microseconds
+        }
 
     private:
         int* m_durations;

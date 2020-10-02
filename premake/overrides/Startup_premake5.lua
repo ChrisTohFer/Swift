@@ -8,6 +8,7 @@ import_projects{
 	"FileIO",
 	"Graphics",
 	"Multimedia",
+	"Physics",
 }
 
 import_sfml()
