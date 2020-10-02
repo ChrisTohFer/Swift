@@ -49,11 +49,8 @@ void SWIFT::RENDERER::IMPL::update_scene(RENDER_SCENE&& scene)
 
 void SWIFT::RENDERER::IMPL::render_loop()
 {
-	CYCLE_TIMER timer(100);
 	while (m_running)
 	{
-		timer.cycle();
-
 		m_window.clear(sf::Color::Black);
 		{
 			m_mutex.lock();

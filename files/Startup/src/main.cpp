@@ -23,7 +23,7 @@ int main()
     while (running())
     {
         using namespace std::chrono_literals;
-        auto next_update_time = std::chrono::system_clock::now() + 15000us;
+        auto next_update_time = std::chrono::system_clock::now() + 1000000us/60;
 
         SWIFT::console().invoke_commands();
         ss.update();

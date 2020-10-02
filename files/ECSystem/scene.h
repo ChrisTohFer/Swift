@@ -22,7 +22,7 @@ namespace SWIFT::EC
 
     public:
         SCENE()
-            : m_update_timer(1)
+            : m_update_timer(300)
         {
             m_service_holder.start(*this);
             m_system_holder.start(*this);
@@ -83,7 +83,7 @@ namespace SWIFT::EC
             return m_entity_holder.count<ENTITY_TYPE>();
         }
 
-        //Settings
+        //Timing
         float timestep()
         {
             return m_timestep;
@@ -95,6 +95,11 @@ namespace SWIFT::EC
         float last_timestep()
         {
             return m_last_timestep;
+        }
+        float framerate(int samples)
+        {
+            auto microsecond_average = m_update_timer.average_cycle_time(samples);
+            return 1000000.f / microsecond_average;
         }
     };
 
