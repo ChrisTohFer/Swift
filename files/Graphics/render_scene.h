@@ -29,7 +29,7 @@ namespace SWIFT
         void camera(CAMERA const&);
 
     private:
-        const CAMERA*       m_main_camera;
+        const CAMERA* m_main_camera;
         RENDER_VECTOR m_objects;
         bool          m_drawn = false;
     };

@@ -48,5 +48,3 @@ namespace SWIFT::EC
     };
 
 }
-
-//#include "system.inl"

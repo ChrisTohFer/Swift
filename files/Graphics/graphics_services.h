@@ -16,10 +16,7 @@ namespace SWIFT
         WINDOW_SERVICE* window_service = nullptr;
 
     public:
-        CAMERA& camera()
-        {
-            return m_camera;
-        }
+        CAMERA& camera();
 
         template<typename SCENE>
         void start(SCENE& scene)
@@ -46,14 +43,8 @@ namespace SWIFT
         SWIFT::RENDERER     m_renderer;
         SWIFT::RENDER_SCENE m_render_scene;
 
-        void clear_and_reserve(size_t capacity)
-        {
-            m_render_scene.clear_and_reserve(capacity);
-        }
-        void add_object(UP_RENDER_OBJECT&& obj)
-        {
-            m_render_scene.add_object(std::move(obj));
-        }
+        void clear_and_reserve(size_t capacity);
+        void add_object(UP_RENDER_OBJECT&& obj);
 
     public:
         template<typename SCENE>
