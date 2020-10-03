@@ -15,7 +15,7 @@ namespace SWIFT::EC
     protected:
         ENTITY_ID m_id;
     public:
-        ENTITY_ID id() { return m_id; }
+        ENTITY_ID id() const { return m_id; }
     };
 
     //ENTITY is a collection of components bundled together with an id

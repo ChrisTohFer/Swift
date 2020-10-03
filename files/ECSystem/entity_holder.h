@@ -42,6 +42,7 @@ namespace SWIFT::EC
                 m_entities.erase(id);
         }
 
+        auto find(ENTITY_ID id) { return m_entities.find(id); }
         auto begin() { return m_entities.begin(); }
         auto end() { return m_entities.end(); }
         auto size() const { return m_entities.size(); }
@@ -80,29 +81,29 @@ namespace SWIFT::EC
             return std::get<index>(m_entities);
         }
         template<typename ENTITY_TYPE>
-        ENTITY_MAP<ENTITY_TYPE>& instantiated_entity_map()
+        ENTITY_MAP<ENTITY_TYPE>& instantiaton_entity_map()
         {
             static_assert((std::is_same<ENTITY_TYPES, ENTITY_TYPE>::value || ...)); //Will fail if we don't contain the map that is asked for
 
             auto constexpr index = VARIADIC_INDEX<ENTITY_TYPE, ENTITY_TYPES...>::index;
-            return std::get<index>(m_instantiated);
+            return std::get<index>(m_instantiation_maps);
         }
         
         //Manipulators
         void update()
         {
             //Insert all instantiated entities into the main maps then clear the instantiated maps
-            (entity_map<ENTITY_TYPES>().insert(instantiated_entity_map<ENTITY_TYPES>()), ...);
-            (instantiated_entity_map<ENTITY_TYPES>().clear(), ...);
+            (entity_map<ENTITY_TYPES>().insert(instantiaton_entity_map<ENTITY_TYPES>()), ...);
+            (instantiaton_entity_map<ENTITY_TYPES>().clear(), ...);
 
             //Remove all destroyed entities and clear the set
             (entity_map<ENTITY_TYPES>().remove(m_destroyed), ...);  //Slightly inefficient - all maps must be checked for each ID
             m_destroyed.clear();
         }
         template<typename ENTITY_TYPE>
-        ENTITY_TYPE& instantiate(ENTITY_TYPE&& entity)
+        ENTITY_TYPE& instantiate()
         {
-            return instantiated_entity_map<ENTITY_TYPE>().insert(std::move(entity));
+            return instantiaton_entity_map<ENTITY_TYPE>().insert(ENTITY_TYPE());
         }
         void destroy(ENTITY_ID id)
         {
@@ -123,7 +124,7 @@ namespace SWIFT::EC
 
     private:
         std::tuple<ENTITY_MAP<ENTITY_TYPES>...> m_entities;
-        std::tuple<ENTITY_MAP<ENTITY_TYPES>...> m_instantiated;
+        std::tuple<ENTITY_MAP<ENTITY_TYPES>...> m_instantiation_maps;
         std::set<ENTITY_ID>                     m_destroyed;
     };
     

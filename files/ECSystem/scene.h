@@ -3,6 +3,7 @@
 #include "entity_holder.h"
 #include "system_holder.h"
 #include "service_holder.h"
+#include "entity_access.h"
 #include "GlobalHeaders/timing.h"
 
 namespace SWIFT::EC
@@ -59,24 +60,33 @@ namespace SWIFT::EC
             return m_entity_holder.insert(std::move(entity));
         }
         template<typename ENTITY_TYPE>
-        ENTITY_TYPE& instantiate(ENTITY_TYPE&& entity)
+        ENTITY_TYPE& instantiate()
         {
             static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
 
-            return m_entity_holder.instantiate(std::move(entity));
+            return m_entity_holder.instantiate<ENTITY_TYPE>();
         }
-        template<typename ENTITY_TYPE>
-        ENTITY_TYPE& instantiate(ENTITY_TYPE const& entity)
-        {
-            static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
-
-            return m_entity_holder.instantiate(entity.copy());
-        }
+        
         void destroy(ENTITY_ID id)
         {
             m_entity_holder.destroy(id);
         }
 
+        template<typename ENTITY_TYPE>
+        ENTITY_ACCESSOR<ENTITIES, ENTITY_TYPE> create_accessor(ENTITY_ID id)
+        {
+            static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
+
+            return ENTITY_ACCESSOR<ENTITIES, ENTITY_TYPE>(m_entity_holder, id);
+        }
+        template<typename ENTITY_TYPE>
+        ENTITY_ACCESSOR<ENTITIES, ENTITY_TYPE> create_accessor(ENTITY_TYPE const& entity)
+        {
+            static_assert(ENTITIES::template has_entity<ENTITY_TYPE>());
+
+            return ENTITY_ACCESSOR<ENTITIES, ENTITY_TYPE>(m_entity_holder, entity);
+        }
+        
         template<typename ENTITY_TYPE>
         size_t entity_count()
         {

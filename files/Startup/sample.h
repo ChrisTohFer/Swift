@@ -76,14 +76,15 @@ public:
             velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 100;
             velocity.angular_velocity = rot_vel;
 
-            BLANK b;
-            auto& t = b.component<SWIFT::TRANSFORM>() = transform;
-            t.rotation += 0.1f;
-            auto& momentum = b.component<SWIFT::MOMENTUM>();
+            BLANK& b = scene.instantiate<BLANK>();
+            auto accessor = scene.create_accessor(b);
+            BLANK& c = *accessor.access();
+            c.component<SWIFT::TRANSFORM>() = transform;
+            auto& momentum = c.component<SWIFT::MOMENTUM>();
             momentum.velocity = -velocity.velocity;
             momentum.angular_velocity = -rot_vel;
 
-            auto& sprite = b.component<SWIFT::SPRITE_COMPONENT>();
+            auto& sprite = c.component<SWIFT::SPRITE_COMPONENT>();
             sprite.size = SWIFT::VECTOR2F(10.f, 10.f);
             auto colour_rand = random();
             if (colour_rand < 0.33f)
@@ -98,8 +99,6 @@ public:
             {
                 sprite.colour = SWIFT::COLOURS::blue;
             }
-
-            scene.instantiate(std::move(b));
         }
 
         if (random() < (1.0f / 900000.f * scene.entity_count<void>()))    //1 in 900,000 chance multiplied by number of entities
@@ -128,7 +127,7 @@ class SAMPLE_SCENE : public SWIFT::EC::SCENE<ENTITIES, SYSTEMS, SERVICES>
 public:
     SAMPLE_SCENE()
     {
-        BLANK b;
+        BLANK& b = instantiate<BLANK>();
         auto& t = b.component<SWIFT::TRANSFORM>();
         t.position = SWIFT::VECTOR2F(500.f, 500.f);
         t.rotation = 0.2f;
@@ -136,6 +135,5 @@ public:
         auto& s = b.component<SWIFT::SPRITE_COMPONENT>();
         s.size = SWIFT::VECTOR2F(10.f, 10.f);
         s.colour = SWIFT::COLOURS::red;
-        instantiate(std::move(b));
     }
 };
