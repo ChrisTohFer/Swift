@@ -67,9 +67,9 @@ namespace SWIFT
             m_renderer.update_scene(std::move(m_render_scene));
         }
         template<typename SCENE>
-        void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM& transform, RENDER_COMPONENT& sprite)
+        void update_per_entity(SCENE&, SWIFT::EC::ENTITY_BASE&, SWIFT::TRANSFORM* transform, RENDER_COMPONENT* sprite)
         {
-            add_object(sprite.create_object(transform));
+            add_object(sprite->create_object(*transform));
         }
     };
 }

@@ -23,11 +23,11 @@ namespace SWIFT
         {
         }
         template<typename SCENE>
-        void update_per_entity(SCENE& scene, EC::ENTITY_BASE&, TRANSFORM& transform, MOMENTUM& momentum)
+        void update_per_entity(SCENE& scene, EC::ENTITY_BASE&, TRANSFORM* transform, MOMENTUM* momentum)
         {
             float timestep = scene.timestep();
-            transform.position += timestep * momentum.velocity;
-            transform.rotation += timestep * momentum.angular_velocity;
+            transform->position += timestep * momentum->velocity;
+            transform->rotation += timestep * momentum->angular_velocity;
         }
     };
 }

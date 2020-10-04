@@ -56,16 +56,16 @@ public:
 
     }
     template<typename SCENE>
-    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, SWIFT::TRANSFORM& transform, SWIFT::MOMENTUM& velocity)
+    void update_per_entity(SCENE& scene, SWIFT::EC::ENTITY_BASE& entity, SWIFT::TRANSFORM* transform, SWIFT::MOMENTUM* velocity)
     {
-        if (transform.position.x < -10.f)
-            transform.position.x += bounds.x + 10.f;
-        else if (transform.position.x > bounds.x)
-            transform.position.x -= bounds.x + 10.f;
-        if (transform.position.y < -10.f)
-            transform.position.y += bounds.y + 10.f;
-        else if (transform.position.y > bounds.y)
-            transform.position.y -= bounds.y + 10.f;
+        if (transform->position.x < -10.f)
+            transform->position.x += bounds.x + 10.f;
+        else if (transform->position.x > bounds.x)
+            transform->position.x -= bounds.x + 10.f;
+        if (transform->position.y < -10.f)
+            transform->position.y += bounds.y + 10.f;
+        else if (transform->position.y > bounds.y)
+            transform->position.y -= bounds.y + 10.f;
 
 
         if (pressed or random() < 1.0f / 300.f)  //1 in 300 chance per frame = every 5 seconds or so
@@ -73,15 +73,15 @@ public:
             auto x_vel   = random() - 0.5f;
             auto y_vel   = random() - 0.5f;
             auto rot_vel = (random() - 0.5f) * 2.f;
-            velocity.velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 100;
-            velocity.angular_velocity = rot_vel;
+            velocity->velocity = SWIFT::VECTOR2F(x_vel, y_vel).normalize() * 100;
+            velocity->angular_velocity = rot_vel;
 
             BLANK& b = scene.instantiate<BLANK>();
             auto accessor = scene.create_accessor(b);
             BLANK& c = *accessor.access();
-            c.component<SWIFT::TRANSFORM>() = transform;
+            c.component<SWIFT::TRANSFORM>() = *transform;
             auto& momentum = c.component<SWIFT::MOMENTUM>();
-            momentum.velocity = -velocity.velocity;
+            momentum.velocity = -velocity->velocity;
             momentum.angular_velocity = -rot_vel;
 
             auto& sprite = c.component<SWIFT::SPRITE_COMPONENT>();
